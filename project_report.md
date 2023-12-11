@@ -1,0 +1,101 @@
+Untitled
+================
+
+### Load packages
+
+``` r
+# Load packages
+library(tidyverse)
+
+
+# Set default figure options
+knitr::opts_chunk$set(
+  fig.width = 6,
+  out.width = "90%"
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## Abstract
+
+## Introduction (brief context & background of the problem)
+
+dataset of breast cancer patients from a prospective study.
+
+information was collected at baseline, survival months: length of
+following up, status: survival status
+
+interested in predicting risk of death based on some/or all predictors.
+
+Variables in dataset:
+
+1.  Age
+2.  Race
+3.  Marital Status
+4.  T Stage: Adjusted AJCC 6th T
+5.  N Stage: Adjusted AJCC 6th N
+6.  6th Stage: Breast Adjusted AJCC 6th Stage
+7.  Differentiate
+8.  Grade
+9.  A Stage: Regional — A neoplasm that has extended; Distant — A
+    neoplasm that has spread to parts of the body remote from
+10. Tumor Size: Each indicates exact size in millimeters.
+11. Estrogen Status
+12. Progesterone Status
+13. Regional Node Examined
+14. Reginol Node Positive
+15. Survival Months
+16. Status: Dead / Alive
+
+Background info/research on breast cancer patients:
+
+Breast cancer occurs due to abnormal cell growths in breast tissue.
+Although it is most often found in females, 1 out of every 100 diagnosed
+patients in the US is a male. Other breast cancer risk factors include,
+increase in age, family history or personal history of breast cancer,
+radiation exposure, obesity, alcohol use, among many more. An
+interesting risk factor: postmenopausal hormone therapy (combines
+estrogren and progesterone to treat signs and symptoms of menopause).
+
+Most recently, breast cancer survival rates have increase and number of
+deaths decreased.
+
+``` r
+breast_cancer <- read_csv('data/Project_2_data.csv') |> 
+  janitor::clean_names() |> 
+  rename(regional_node_positive = reginol_node_positive) |> 
+  mutate(
+    race = as_factor(race),
+    marital_status = as_factor(marital_status),
+    t_stage = as_factor(t_stage),
+    n_stage = as_factor(n_stage),
+    x6th_stage = as_factor(x6th_stage),
+    differentiate = as_factor(differentiate),
+    grade = as_factor(grade),
+    a_stage = as_factor(a_stage),
+    estrogen_status = as_factor(estrogen_status),
+    progesterone_status = as_factor(progesterone_status),
+    status = case_match(status,
+                        "Dead" ~ 0,
+                        "Alive" ~ 1)
+    
+  )
+```
+
+    ## Rows: 4024 Columns: 16
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (11): Race, Marital Status, T Stage, N Stage, 6th Stage, differentiate, ...
+    ## dbl  (5): Age, Tumor Size, Regional Node Examined, Reginol Node Positive, Su...
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.

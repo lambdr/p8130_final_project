@@ -7,7 +7,10 @@ output: github_document
 # Load packages
 library(tidyverse)
 library(survival)
+<<<<<<< HEAD
 
+=======
+>>>>>>> b7537b495c7226bb12b0f88bb36bdea6abc0fe60
 
 # Set default figure options
 knitr::opts_chunk$set(
@@ -68,10 +71,33 @@ Breast cancer occurs due to abnormal cell growths in breast tissue. Although it 
 Most recently, breast cancer survival rates have increase and number of deaths decreased.
 
 
+
 Our dataset contains information
 
 ```{r}
 breast_cancer <- read_csv('data/Project_2_data.csv')
+```
+
+```{r data import}
+breast_cancer <- read_csv('data/Project_2_data.csv') |> 
+  janitor::clean_names() |> 
+  rename(regional_node_positive = reginol_node_positive) |> 
+  mutate(
+    race = as_factor(race),
+    marital_status = as_factor(marital_status),
+    t_stage = as_factor(t_stage),
+    n_stage = as_factor(n_stage),
+    x6th_stage = as_factor(x6th_stage),
+    differentiate = as_factor(differentiate),
+    grade = as_factor(grade),
+    a_stage = as_factor(a_stage),
+    estrogen_status = as_factor(estrogen_status),
+    progesterone_status = as_factor(progesterone_status),
+    status = case_match(status,
+                        "Dead" ~ 0,
+                        "Alive" ~ 1)
+    
+  )
 ```
 
 
@@ -86,4 +112,67 @@ unique(breast_cancer$`T Stage`)
 
 
 
+
+```{r}
+full_model = 
+  breast_cancer |> 
+  coxph(Surv(survival_months, status) ~. , data = _)
+```
+
+```{r}
+breast_cancer |> 
+  cor() |> 
+  corrplot::corrplot()
+```
+
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+breast_cancer %>%
+  ggplot(aes(x = `T Stage`)) +
+  geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = `N Stage`)) +
+  geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = `6th Stage`)) +
+  geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = differentiate)) +
+  geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = Grade)) +
+  geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = `Estrogen Status`)) +
+  geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = `Progesterone Status`)) +
+  geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = Status)) +
+  geom_bar()
+```
 
