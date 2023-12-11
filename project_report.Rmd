@@ -6,8 +6,7 @@ output: github_document
 ```{r load packages and default options, message = FALSE}
 # Load packages
 library(tidyverse)
-library(readr)
-
+library(survival)
 
 # Set default figure options
 knitr::opts_chunk$set(
@@ -89,4 +88,16 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
   )
 ```
 
+
+```{r}
+full_model = 
+  breast_cancer |> 
+  coxph(Surv(survival_months, status) ~. , data = _)
+```
+
+```{r}
+breast_cancer |> 
+  cor() |> 
+  corrplot::corrplot()
+```
 

@@ -6,7 +6,6 @@ Untitled
 ``` r
 # Load packages
 library(tidyverse)
-library(readr)
 
 
 # Set default figure options
