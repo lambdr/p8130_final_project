@@ -6,7 +6,9 @@ Untitled
 ``` r
 # Load packages
 library(tidyverse)
-
+library(survival)
+library(broom)
+library(knitr)
 
 # Set default figure options
 knitr::opts_chunk$set(
@@ -69,28 +71,6 @@ estrogren and progesterone to treat signs and symptoms of menopause).
 Most recently, breast cancer survival rates have increase and number of
 deaths decreased.
 
-``` r
-breast_cancer <- read_csv('data/Project_2_data.csv') |> 
-  janitor::clean_names() |> 
-  rename(regional_node_positive = reginol_node_positive) |> 
-  mutate(
-    race = as_factor(race),
-    marital_status = as_factor(marital_status),
-    t_stage = as_factor(t_stage),
-    n_stage = as_factor(n_stage),
-    x6th_stage = as_factor(x6th_stage),
-    differentiate = as_factor(differentiate),
-    grade = as_factor(grade),
-    a_stage = as_factor(a_stage),
-    estrogen_status = as_factor(estrogen_status),
-    progesterone_status = as_factor(progesterone_status),
-    status = case_match(status,
-                        "Dead" ~ 0,
-                        "Alive" ~ 1)
-    
-  )
-```
-
     ## Rows: 4024 Columns: 16
     ## ── Column specification ────────────────────────────────────────────────────────
     ## Delimiter: ","
@@ -99,3 +79,42 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+### logistic
+
+``` r
+logistic_model =
+  breast_cancer |> 
+  glm(status ~ ., data = _, family = binomial())
+```
+
+``` r
+logistic_model |> 
+  MASS::stepAIC(
+    direction = "both",
+    k = 2,
+    trace = 0) |> 
+  tidy()
+```
+
+    ## # A tibble: 18 × 5
+    ##    term                                   estimate std.error statistic  p.value
+    ##    <chr>                                     <dbl>     <dbl>     <dbl>    <dbl>
+    ##  1 (Intercept)                             -3.98     0.339      -11.7  7.90e-32
+    ##  2 age                                      0.0227   0.00557      4.07 4.75e- 5
+    ##  3 raceBlack                                0.498    0.161        3.09 2.02e- 3
+    ##  4 raceOther                               -0.435    0.202       -2.15 3.12e- 2
+    ##  5 marital_statusDivorced                   0.227    0.141        1.61 1.07e- 1
+    ##  6 marital_statusSingle                     0.158    0.134        1.18 2.37e- 1
+    ##  7 marital_statusWidowed                    0.233    0.192        1.21 2.26e- 1
+    ##  8 marital_statusSeparated                  0.840    0.366        2.30 2.17e- 2
+    ##  9 x6th_stageIIIA                           0.685    0.141        4.85 1.24e- 6
+    ## 10 x6th_stageIIIC                           1.18     0.176        6.73 1.73e-11
+    ## 11 x6th_stageIIB                            0.497    0.144        3.45 5.68e- 4
+    ## 12 x6th_stageIIIB                           1.30     0.303        4.29 1.81e- 5
+    ## 13 differentiateModerately differentiated  -0.392    0.104       -3.75 1.75e- 4
+    ## 14 differentiateWell differentiated        -0.924    0.192       -4.80 1.57e- 6
+    ## 15 differentiateUndifferentiated            0.990    0.529        1.87 6.12e- 2
+    ## 16 estrogen_statusNegative                  0.732    0.177        4.14 3.46e- 5
+    ## 17 progesterone_statusNegative              0.578    0.127        4.54 5.61e- 6
+    ## 18 regional_prop                            1.23     0.185        6.66 2.81e-11

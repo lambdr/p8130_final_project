@@ -8,9 +8,14 @@ output: github_document
 library(tidyverse)
 library(survival)
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> b7537b495c7226bb12b0f88bb36bdea6abc0fe60
+=======
+library(broom)
+library(knitr)
+>>>>>>> daed385612b7d3b9e6b7f555f0b8f94d3a8d50a0
 
 # Set default figure options
 knitr::opts_chunk$set(
@@ -70,6 +75,7 @@ Breast cancer occurs due to abnormal cell growths in breast tissue. Although it 
 
 Most recently, breast cancer survival rates have increase and number of deaths decreased.
 
+<<<<<<< HEAD
 
 
 Our dataset contains information
@@ -79,27 +85,30 @@ breast_cancer <- read_csv('data/Project_2_data.csv')
 ```
 
 ```{r data import}
+=======
+```{r data import, echo = FALSE}
+>>>>>>> daed385612b7d3b9e6b7f555f0b8f94d3a8d50a0
 breast_cancer <- read_csv('data/Project_2_data.csv') |> 
   janitor::clean_names() |> 
   rename(regional_node_positive = reginol_node_positive) |> 
   mutate(
     race = as_factor(race),
     marital_status = as_factor(marital_status),
-    t_stage = as_factor(t_stage),
-    n_stage = as_factor(n_stage),
     x6th_stage = as_factor(x6th_stage),
     differentiate = as_factor(differentiate),
-    grade = as_factor(grade),
     a_stage = as_factor(a_stage),
     estrogen_status = as_factor(estrogen_status),
     progesterone_status = as_factor(progesterone_status),
     status = case_match(status,
-                        "Dead" ~ 0,
-                        "Alive" ~ 1)
-    
-  )
+                        "Dead" ~ 1,
+                        "Alive" ~ 0),
+    regional_prop = regional_node_positive/regional_node_examined
+  ) |> 
+  select(-c(regional_node_positive, regional_node_examined, survival_months,
+            t_stage, n_stage, grade))
 ```
 
+<<<<<<< HEAD
 
 ```{r}
 unique(breast_cancer$`6th Stage`)
@@ -115,14 +124,22 @@ unique(breast_cancer$`T Stage`)
 
 ```{r}
 full_model = 
+=======
+### logistic
+```{r construct full model}
+logistic_model =
+>>>>>>> daed385612b7d3b9e6b7f555f0b8f94d3a8d50a0
   breast_cancer |> 
-  coxph(Surv(survival_months, status) ~. , data = _)
+  glm(status ~ ., data = _, family = binomial())
 ```
 
-```{r}
-breast_cancer |> 
-  cor() |> 
-  corrplot::corrplot()
+```{r optimize model AIC}
+logistic_model |> 
+  MASS::stepAIC(
+    direction = "both",
+    k = 2,
+    trace = 0) |> 
+  tidy()
 ```
 
 
