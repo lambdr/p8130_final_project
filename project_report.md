@@ -9,6 +9,7 @@ library(tidyverse)
 library(survival)
 library(broom)
 library(knitr)
+library(modelr)
 
 # Set default figure options
 knitr::opts_chunk$set(
@@ -71,6 +72,8 @@ estrogren and progesterone to treat signs and symptoms of menopause).
 Most recently, breast cancer survival rates have increase and number of
 deaths decreased.
 
+Our dataset contains information
+
     ## Rows: 4024 Columns: 16
     ## ── Column specification ────────────────────────────────────────────────────────
     ## Delimiter: ","
@@ -80,7 +83,12 @@ deaths decreased.
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
-### logistic
+``` r
+unique(breast_cancer$`x6th_stage`)
+```
+
+    ## [1] IIA  IIIA IIIC IIB  IIIB
+    ## Levels: IIA IIIA IIIC IIB IIIB
 
 ``` r
 logistic_model =
@@ -89,11 +97,26 @@ logistic_model =
 ```
 
 ``` r
-logistic_model |> 
+opt_model =
+  logistic_model |> 
   MASS::stepAIC(
     direction = "both",
     k = 2,
-    trace = 0) |> 
+    trace = 0)
+```
+
+``` r
+opt_model |> 
+  glance()
+```
+
+    ## # A tibble: 1 × 8
+    ##   null.deviance df.null logLik   AIC   BIC deviance df.residual  nobs
+    ##           <dbl>   <int>  <dbl> <dbl> <dbl>    <dbl>       <int> <int>
+    ## 1         3445.    4023 -1484. 3005. 3118.    2969.        4006  4024
+
+``` r
+opt_model |> 
   tidy()
 ```
 
@@ -118,3 +141,88 @@ logistic_model |>
     ## 16 estrogen_statusNegative                  0.732    0.177        4.14 3.46e- 5
     ## 17 progesterone_statusNegative              0.578    0.127        4.54 5.61e- 6
     ## 18 regional_prop                            1.23     0.185        6.66 2.81e-11
+
+``` r
+breast_cancer = 
+  breast_cancer |> 
+  add_residuals(opt_model) |> 
+  add_predictions(opt_model)
+```
+
+``` r
+breast_cancer |> 
+  ggplot(aes(sample = resid)) +
+  stat_qq() +
+  stat_qq_line()
+```
+
+<img src="project_report_files/figure-gfm/qq plot-1.png" width="90%" />
+
+``` r
+breast_cancer |> 
+  ggplot(aes(x = pred, y = resid)) +
+  geom_point()
+```
+
+<img src="project_report_files/figure-gfm/resid plot-1.png" width="90%" />
+
+``` r
+## Commented out because t_stage is removed at data import
+#breast_cancer |> 
+  #ggplot(aes(x = `t_stage`)) +
+  #geom_bar()
+```
+
+``` r
+## Commented out because n_stage is removed at data import
+#breast_cancer  |> 
+  #ggplot(aes(x = `n_stage`)) +
+  #geom_bar()
+```
+
+``` r
+breast_cancer %>%
+  ggplot(aes(x = `x6th_stage`)) +
+  geom_bar()
+```
+
+<img src="project_report_files/figure-gfm/unnamed-chunk-5-1.png" width="90%" />
+
+``` r
+breast_cancer %>%
+  ggplot(aes(x = differentiate)) +
+  geom_bar()
+```
+
+<img src="project_report_files/figure-gfm/unnamed-chunk-6-1.png" width="90%" />
+
+``` r
+## Commented out because grade is removed at data import
+#breast_cancer %>%
+  #ggplot(aes(x = grade)) +
+  #geom_bar()
+```
+
+``` r
+breast_cancer %>%
+  ggplot(aes(x = `estrogen_status`)) +
+  geom_bar()
+```
+
+<img src="project_report_files/figure-gfm/unnamed-chunk-8-1.png" width="90%" />
+
+``` r
+breast_cancer %>%
+  ggplot(aes(x = `progesterone_status`)) +
+  geom_bar()
+```
+
+<img src="project_report_files/figure-gfm/unnamed-chunk-9-1.png" width="90%" />
+
+``` r
+breast_cancer %>%
+  ggplot(aes(x = status)) +
+  geom_bar()
+```
+
+<img src="project_report_files/figure-gfm/unnamed-chunk-10-1.png" width="90%" />

@@ -7,15 +7,9 @@ output: github_document
 # Load packages
 library(tidyverse)
 library(survival)
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> b7537b495c7226bb12b0f88bb36bdea6abc0fe60
-=======
 library(broom)
 library(knitr)
->>>>>>> daed385612b7d3b9e6b7f555f0b8f94d3a8d50a0
+library(modelr)
 
 # Set default figure options
 knitr::opts_chunk$set(
@@ -75,19 +69,10 @@ Breast cancer occurs due to abnormal cell growths in breast tissue. Although it 
 
 Most recently, breast cancer survival rates have increase and number of deaths decreased.
 
-<<<<<<< HEAD
-
-
 Our dataset contains information
 
-```{r}
-breast_cancer <- read_csv('data/Project_2_data.csv')
-```
-
-```{r data import}
-=======
 ```{r data import, echo = FALSE}
->>>>>>> daed385612b7d3b9e6b7f555f0b8f94d3a8d50a0
+
 breast_cancer <- read_csv('data/Project_2_data.csv') |> 
   janitor::clean_names() |> 
   rename(regional_node_positive = reginol_node_positive) |> 
@@ -108,58 +93,75 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
             t_stage, n_stage, grade))
 ```
 
-<<<<<<< HEAD
 
 ```{r}
-unique(breast_cancer$`6th Stage`)
-```
-
-```{r}
-unique(breast_cancer$`T Stage`)
+unique(breast_cancer$`x6th_stage`)
 ```
 
 
 
-
-
-```{r}
-full_model = 
-=======
-### logistic
 ```{r construct full model}
 logistic_model =
->>>>>>> daed385612b7d3b9e6b7f555f0b8f94d3a8d50a0
   breast_cancer |> 
   glm(status ~ ., data = _, family = binomial())
 ```
 
 ```{r optimize model AIC}
-logistic_model |> 
+opt_model =
+  logistic_model |> 
   MASS::stepAIC(
     direction = "both",
     k = 2,
-    trace = 0) |> 
+    trace = 0)
+```
+
+```{r}
+opt_model |> 
+  glance()
+
+opt_model |> 
   tidy()
 ```
 
+```{r add prediction and residual}
+breast_cancer = 
+  breast_cancer |> 
+  add_residuals(opt_model) |> 
+  add_predictions(opt_model)
+  
+```
+
+```{r qq plot}
+breast_cancer |> 
+  ggplot(aes(sample = resid)) +
+  stat_qq() +
+  stat_qq_line()
+```
+
+```{r resid plot}
+breast_cancer |> 
+  ggplot(aes(x = pred, y = resid)) +
+  geom_point()
+```
+
 
 ```{r}
-library(ggplot2)
-library(tidyverse)
-breast_cancer %>%
-  ggplot(aes(x = `T Stage`)) +
-  geom_bar()
+## Commented out because t_stage is removed at data import
+#breast_cancer |> 
+  #ggplot(aes(x = `t_stage`)) +
+  #geom_bar()
+```
+
+```{r}
+## Commented out because n_stage is removed at data import
+#breast_cancer  |> 
+  #ggplot(aes(x = `n_stage`)) +
+  #geom_bar()
 ```
 
 ```{r}
 breast_cancer %>%
-  ggplot(aes(x = `N Stage`)) +
-  geom_bar()
-```
-
-```{r}
-breast_cancer %>%
-  ggplot(aes(x = `6th Stage`)) +
+  ggplot(aes(x = `x6th_stage`)) +
   geom_bar()
 ```
 
@@ -170,26 +172,27 @@ breast_cancer %>%
 ```
 
 ```{r}
+## Commented out because grade is removed at data import
+#breast_cancer %>%
+  #ggplot(aes(x = grade)) +
+  #geom_bar()
+```
+
+```{r}
 breast_cancer %>%
-  ggplot(aes(x = Grade)) +
+  ggplot(aes(x = `estrogen_status`)) +
   geom_bar()
 ```
 
 ```{r}
 breast_cancer %>%
-  ggplot(aes(x = `Estrogen Status`)) +
+  ggplot(aes(x = `progesterone_status`)) +
   geom_bar()
 ```
 
 ```{r}
 breast_cancer %>%
-  ggplot(aes(x = `Progesterone Status`)) +
-  geom_bar()
-```
-
-```{r}
-breast_cancer %>%
-  ggplot(aes(x = Status)) +
+  ggplot(aes(x = status)) +
   geom_bar()
 ```
 
