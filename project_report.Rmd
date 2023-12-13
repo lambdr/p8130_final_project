@@ -62,14 +62,6 @@ parts of the body remote from
 16. Status: Dead / Alive
 
 
-Background info/research on breast cancer patients:
-
-Breast cancer occurs due to abnormal cell growths in breast tissue. Although it is most often found in females, 1 out of every 100 diagnosed patients in the US is a male. Other breast cancer risk factors include, increase in age, family history or personal history of breast cancer, radiation exposure, obesity, alcohol use, among many more. An interesting risk factor: postmenopausal hormone therapy (combines estrogren and progesterone to treat signs and symptoms of menopause).  
-
-
-Most recently, breast cancer survival rates have increase and number of deaths decreased.
-
-Our dataset contains information
 
 ```{r data import, echo = FALSE}
 
