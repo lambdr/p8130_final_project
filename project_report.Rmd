@@ -121,7 +121,8 @@ opt_model |>
 breast_cancer = 
   breast_cancer |> 
   add_residuals(opt_model) |> 
-  add_predictions(opt_model)
+  add_predictions(opt_model) |> 
+  mutate(p_hat = 1/(1 + exp(-pred)))
   
 ```
 
@@ -213,3 +214,82 @@ tumor_plot_sq =
 ggpubr::ggarrange(tumor_plot, tumor_plot_sq)
 ```
 
+
+
+
+# brier score
+
+```{r}
+#adding predicted prob to model
+breast_cancer <- breast_cancer %>%
+  mutate(predicted_prob = predict(opt_model, type = 'response'))
+
+
+predicted_prob <- predict(opt_model, type = 'response')
+
+brier_score <- mean((predicted_prob-breast_cancer$status)^2)
+brier_score
+
+# a brier score of 0 means perfect accuracy
+#measuring accuracy of probabilistic predictions
+```
+
+## across race
+
+```{r}
+white_breast_cancer <- breast_cancer %>%
+  filter(race == 'White')
+```
+
+```{r}
+white_brier_score <- mean((white_breast_cancer$predicted_prob - white_breast_cancer$status)^2)
+white_brier_score
+```
+
+
+```{r}
+black_breast_cancer <- breast_cancer %>%
+  filter(race == 'Black')
+```
+
+```{r}
+black_brier_score <- mean((black_breast_cancer$predicted_prob - black_breast_cancer$status)^2)
+black_brier_score
+```
+
+
+```{r}
+other_breast_cancer <- breast_cancer %>%
+  filter(race == 'Other')
+```
+
+```{r}
+other_brier_score <- mean((other_breast_cancer$predicted_prob - other_breast_cancer$status)^2)
+other_brier_score
+```
+
+
+# Separation plots
+
+```{r separation plot}
+# https://www.jstor.org/stable/23025132
+library(separationplot)
+separationplot(pred = breast_cancer$p_hat, 
+               actual = breast_cancer$status,
+               heading = "Prediciton Plot")
+  
+```
+
+```{r}
+sep_plot_race = function(df, r){
+  df =
+    df |> 
+    filter(race == r)
+  
+  plot = separationplot(pred = df$p_hat, 
+               actual = df$status,
+               heading = r,
+               newplot = F)
+  
+}
+```
