@@ -201,7 +201,8 @@ opt_model |>
 breast_cancer = 
   breast_cancer |> 
   add_residuals(opt_model) |> 
-  add_predictions(opt_model)
+  add_predictions(opt_model) |> 
+  mutate(p_hat = 1/(1 + exp(-pred)))
 ```
 
 ``` r
@@ -286,3 +287,73 @@ breast_cancer %>%
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
 <img src="project_report_files/figure-gfm/tumor size transformation hist-1.png" width="90%" />
+
+# brier score
+
+``` r
+predicted_prob <- predict(opt_model, type = 'response')
+
+brier_score <- mean(predicted_prob-breast_cancer$status)
+
+brier_score
+```
+
+    ## [1] 1.08494e-11
+
+``` r
+# a brier score of 0 means perfect accuracy
+#measuring accuracy of probabilistic predictions
+```
+
+# Separation plots
+
+``` r
+# https://www.jstor.org/stable/23025132
+library(separationplot)
+```
+
+    ## Loading required package: RColorBrewer
+
+    ## Loading required package: Hmisc
+
+    ## 
+    ## Attaching package: 'Hmisc'
+
+    ## The following objects are masked from 'package:dplyr':
+    ## 
+    ##     src, summarize
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     format.pval, units
+
+    ## Loading required package: MASS
+
+    ## 
+    ## Attaching package: 'MASS'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     select
+
+    ## Loading required package: foreign
+
+``` r
+separationplot(pred = breast_cancer$p_hat, 
+               actual = breast_cancer$status,
+               heading = "Prediciton Plot")
+```
+
+``` r
+sep_plot_race = function(df, r){
+  df =
+    df |> 
+    filter(race == r)
+  
+  plot = separationplot(pred = df$p_hat, 
+               actual = df$status,
+               heading = r,
+               newplot = F)
+  
+}
+```
