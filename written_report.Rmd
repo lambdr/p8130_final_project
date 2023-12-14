@@ -10,9 +10,17 @@ output: pdf_document
 
 Background info/research on breast cancer patients:
 
-Breast cancer occurs due to abnormal cell growths in breast tissue. Although it is most often found in females, 1 out of every 100 diagnosed patients in the US is a male. Other breast cancer risk factors include, increase in age, family history or personal history of breast cancer, radiation exposure, obesity, alcohol use, among many more. An interesting risk factor: postmenopausal hormone therapy (combines estrogen and progesterone to treat signs and symptoms of menopause).
+Breast cancer occurs due to abnormal cell growths in breast tissue. Although it is most often found in females, 1 out of every 100 diagnosed patients in the US is a male. Other breast cancer risk factors include, increase in age, family history or personal history of breast cancer, radiation exposure, obesity, alcohol use, among many more. Research suggests that postmenopausal hormone therapy is a risk factor due the combination of estrogren and progresterone used to treat signs and symptooms of menopause. 
+Additionally, the patient's breast cancer stage is important to consider 
 
-Most recently, breast cancer survival rates have increase and number of deaths decreased.
+to the severity 
+
+
+
+
+
+Most recently, breast cancer survival rates have increased and number of deaths decreased. 
+
 
 ## Methods
 
