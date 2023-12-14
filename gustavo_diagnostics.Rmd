@@ -1,0 +1,291 @@
+---
+title: "Untitled"
+output: github_document
+---
+### Load packages
+```{r load packages and default options, message = FALSE}
+# Load packages
+library(tidyverse)
+library(broom)
+library(knitr)
+library(modelr)
+
+# Set default figure options
+knitr::opts_chunk$set(
+  fig.width = 6,
+  out.width = "90%"
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+
+## Abstract
+
+
+
+## Introduction (brief context & background of the problem)
+
+dataset of breast cancer patients from a prospective study. 
+
+information was collected at baseline, survival months: length of following up, status: survival status
+
+interested in predicting risk of death based on some/or all predictors.
+
+Variables in dataset:
+
+1. Age
+2. Race
+3. Marital Status
+4. T Stage: Adjusted AJCC 6th T
+5. N Stage: Adjusted AJCC 6th N
+6. 6th Stage: Breast Adjusted AJCC 6th Stage
+7. Differentiate
+8. Grade
+9. A Stage: Regional — A neoplasm that has extended; Distant — A neoplasm that has spread to
+parts of the body remote from
+10. Tumor Size: Each indicates exact size in millimeters.
+11. Estrogen Status
+12. Progesterone Status
+13. Regional Node Examined
+14. Reginol Node Positive
+15. Survival Months
+16. Status: Dead / Alive
+
+
+
+```{r data import, echo = FALSE}
+
+breast_cancer <- read_csv('data/Project_2_data.csv') |> 
+  janitor::clean_names() |> 
+  rename(regional_node_positive = reginol_node_positive) |> 
+  mutate(
+    race = as_factor(race),
+    marital_status = as_factor(marital_status),
+    x6th_stage = as_factor(x6th_stage),
+    differentiate = as_factor(differentiate),
+    a_stage = as_factor(a_stage),
+    root_tumor_size = sqrt(tumor_size),
+    estrogen_status = as_factor(estrogen_status),
+    progesterone_status = as_factor(progesterone_status),
+    status = case_match(status,
+                        "Dead" ~ 1,
+                        "Alive" ~ 0),
+    regional_prop = regional_node_positive/regional_node_examined
+  ) |> 
+  select(-c(regional_node_positive, regional_node_examined, survival_months,
+            t_stage, n_stage, grade, tumor_size))
+```
+
+
+```{r}
+breast_cancer = breast_cancer %>%
+  mutate(main_stage = case_when(
+    str_detect(x6th_stage, "III") ~ "III",
+    str_detect(x6th_stage, "II") ~ "II",
+    str_detect(x6th_stage, "I") ~ "I",
+  ),
+  race2 = ifelse(race == "White", "White", "POC"))
+```
+
+
+
+```{r construct full model}
+logistic_model =
+  breast_cancer |> 
+  glm(status ~ . + estrogen_status*progesterone_status, data = _, family = binomial())
+```
+
+```{r optimize model AIC}
+opt_model =
+  logistic_model |> 
+  MASS::stepAIC(
+    direction = "both",
+    k = 2, trace = 0)
+```
+
+```{r}
+opt_model |> 
+  glance()
+
+opt_model |> 
+  tidy()
+
+opt_model |> 
+  car::vif()
+```
+
+Cooks distance 
+
+```{r}
+i = cooks.distance(opt_model)
+plot(i,type="h")
+```
+
+Residuals 
+
+```{r}
+D = residuals(opt_model)
+plot(D);abline(h=0,col="red")
+```
+
+Fitted
+
+```{r}
+p = predict(opt_model,type="response")
+
+plot(x = p, y = D)
+```
+
+
+```{r}
+y = breast_cancer$status
+n = length(y)
+yhat = rep(0,n)
+yhat[p >= .5] = 1
+```
+
+```{r}
+library(pROC)
+tmp = roc(y,p)
+plot(tmp)
+print(tmp$auc)
+```
+
+```{r}
+#White
+library(pROC)
+tmp = roc(y[breast_cancer$race == "White"],p[breast_cancer$race == "White"])
+plot(tmp)
+print(tmp$auc)
+```
+
+```{r}
+#non White
+library(pROC)
+tmp = roc(y[breast_cancer$race != "White"],p[breast_cancer$race != "White"])
+plot(tmp)
+print(tmp$auc)
+```
+
+```{r}
+#Black
+library(pROC)
+tmp = roc(y[breast_cancer$race == "Black"],p[breast_cancer$race == "Black"])
+plot(tmp)
+print(tmp$auc)
+```
+
+```{r}
+#Other
+library(pROC)
+tmp = roc(y[breast_cancer$race == "Other"],p[breast_cancer$race == "Other"])
+plot(tmp)
+print(tmp$auc)
+```
+
+
+```{r}
+D = (y - p)
+plot(D);abline(h=0,col="red")
+```
+
+```{r}
+data.frame(y = y, u = p, res_sq = (y - p)^2, race = breast_cancer$race,
+           index = 1:4024) %>%
+  ggplot(aes(x = index, y = res_sq, color = race)) + geom_point() +
+  stat_smooth()
+```
+
+
+
+
+```{r add prediction and residual}
+breast_cancer$probs = 
+  
+```
+
+```{r qq plot}
+breast_cancer |> 
+  ggplot(aes(sample = resid)) +
+  stat_qq() +
+  stat_qq_line()
+```
+
+```{r resid plot}
+breast_cancer |> 
+  ggplot(aes(x = pred, y = resid)) +
+  geom_point()
+```
+
+
+
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = `x6th_stage`)) +
+  geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = differentiate)) +
+  geom_bar()
+```
+
+```{r}
+## Commented out because grade is removed at data import
+#breast_cancer %>%
+  #ggplot(aes(x = grade)) +
+  #geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = `estrogen_status`)) +
+  geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = `race`)) +
+  geom_bar()
+```
+
+```{r}
+breast_cancer %>%
+  ggplot(aes(x = status)) +
+  geom_bar()
+```
+
+```{r tumor size transformation hist, echo = FALSE}
+tumor_plot = 
+  breast_cancer |> 
+  mutate(tumor_size = root_tumor_size^2) |> 
+  ggplot(aes(x = tumor_size)) + 
+  geom_histogram(alpha = 0.8, col = I("black")) +
+  labs(
+    x = "Tumor size (mm)",
+    y = "Frequency"
+  )
+  
+tumor_plot_sq = 
+  breast_cancer |> 
+  ggplot(aes(x = root_tumor_size)) + 
+  geom_histogram(alpha = 0.8, col = I("black")) +
+  labs(
+    x = "Square root of tumor size",
+    y = "Frequency"
+  )
+
+ggpubr::ggarrange(tumor_plot, tumor_plot_sq)
+```
+
