@@ -7,14 +7,40 @@ header-includes:
 output: pdf_document
 ---
 
+```{r load packages and default options, include = FALSE}
+# Load packages
+library(separationplot)
+library(tidyverse)
+library(broom)
+library(knitr)
+library(modelr)
+
+# Set default figure options
+knitr::opts_chunk$set(
+  fig.width = 6,
+  out.width = "90%"
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
 ## Abstract
 
 ## Introduction
 
 Background info/research on breast cancer patients:
 
-Breast cancer occurs due to abnormal cell growths in breast tissue. Although it is most often found in females, 1 out of every 100 diagnosed patients in the US is a male. Other breast cancer risk factors include, increase in age, family history or personal history of breast cancer, radiation exposure, obesity, alcohol use, among many more. Research suggests that postmenopausal hormone therapy is a risk factor due the combination of estrogren and progresterone used to treat signs and symptooms of menopause. 
-Additionally, the patient's breast cancer stage is important to consider when determining the severity of the cancer and how to treat it. The American Join Committee on Cancer (AJCC) TNM system is the most common, and contains clinical and pathologic systems. The pathologic stage is determined by examining the tissue removed during surgery, while the clinical stage is based on results of a physical exam, biopsy, and imaging tests. Nevertheless, both systems are composed of the size of the tumor, the spread to nearby lymph nodes and/or to distant sites, their estrogen and/or progesterone receptor status, the grade of the cancer, and if the cancer makes too much of HER2 protien. 
+Breast cancer occurs due to abnormal cell growths in breast tissue. Although it is most often found in females, 1 out of every 100 diagnosed patients in the US is a male. Other breast cancer risk factors include, increase in age, family history or personal history of breast cancer, radiation exposure, obesity, alcohol use, among many more. Research suggests that postmenopausal hormone therapy is a risk factor due the combination of estrogen and progesterone used to treat signs and symptoms of menopause. 
+
+Additionally, the patient's breast cancer stage is important to consider when determining the severity of the cancer and how to treat it. The American Joint Committee on Cancer (AJCC) TNM system is the most common, and contains clinical and pathologic systems. The pathologic stage is determined by examining the tissue removed during surgery, while the clinical stage is based on results of a physical exam, biopsy, and imaging tests. Nevertheless, both systems are composed of the size of the tumor, the spread to nearby lymph nodes and/or to distant sites, their estrogen and/or progesterone receptor status, the grade of the cancer, and if the cancer makes too much of HER2 protien. 
 
 
 
@@ -32,6 +58,29 @@ We obtained a deidentified set containing data on 4024 breast cancer patients. t
 #### Data cleaning
 
 We decided to combine the regional node positive and regional node examined variables into a "regional node proportion positive" variable. This variable, but neither the node positive nor node examined variables were in the model. Further, we decided to discard the T stage and N stage variables, as they captured information already contained in the AJCC 6th stage variable. We also excluded the grade variable, as it captured the same patient information as the differentiate variable.
+
+```{r data import and tidying, echo = FALSE, message = FALSE}
+breast_cancer <- read_csv('data/Project_2_data.csv') |> 
+  janitor::clean_names() |> 
+  rename(regional_node_positive = reginol_node_positive) |> 
+  mutate(
+    race = as_factor(race),
+    marital_status = as_factor(marital_status),
+    x6th_stage = as_factor(x6th_stage),
+    differentiate = as_factor(differentiate),
+    a_stage = as_factor(a_stage),
+    root_tumor_size = sqrt(tumor_size),
+    estrogen_status = as_factor(estrogen_status),
+    progesterone_status = as_factor(progesterone_status),
+    status = case_match(status,
+                        "Dead" ~ 1,
+                        "Alive" ~ 0),
+    regional_prop = regional_node_positive/regional_node_examined
+  ) |> 
+  select(-c(regional_node_positive, regional_node_examined, survival_months,
+            t_stage, n_stage, grade, tumor_size))
+```
+
 
 #### Model construction
 
@@ -55,9 +104,28 @@ The aforementioned analyses were carried out using R 4.3.1 and RStudio Version 2
 
 ## Results
 
+#### Model construction and selection
+
+The variables that were identified as important were xyz, and not 
+
+#### Diagnostics
+
+ROC, Brier score
+
+Separation plots
+
+#### Model performance by race
+
+Make a table with ROC AUC and Brier scores by race. Discuss
 
 ## Discussion
 
 ## Author Contributions
 
 ## References
+
+
+## Appendices
+
+a. tumor size transformation
+b. ROC by race +/- sep plots?
