@@ -213,3 +213,19 @@ tumor_plot_sq =
 ggpubr::ggarrange(tumor_plot, tumor_plot_sq)
 ```
 
+
+
+
+# brier score
+
+```{r}
+predicted_prob <- predict(opt_model, type = 'response')
+
+brier_score <- mean(predicted_prob-breast_cancer$status)
+
+brier_score
+
+# a brier score of 0 means perfect accuracy
+```
+
+
