@@ -1,5 +1,8 @@
 ---
 title: "Untitled"
+author: "Some authors"
+header-includes:
+    - \usepackage{setspace}\doublespacing
 
 output: pdf_document
 ---
