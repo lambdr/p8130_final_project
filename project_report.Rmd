@@ -121,7 +121,8 @@ opt_model |>
 breast_cancer = 
   breast_cancer |> 
   add_residuals(opt_model) |> 
-  add_predictions(opt_model)
+  add_predictions(opt_model) |> 
+  mutate(p_hat = 1/(1 + exp(-pred)))
   
 ```
 
@@ -230,3 +231,27 @@ brier_score
 ```
 
 
+# Separation plots
+
+```{r separation plot}
+# https://www.jstor.org/stable/23025132
+library(separationplot)
+separationplot(pred = breast_cancer$p_hat, 
+               actual = breast_cancer$status,
+               heading = "Prediciton Plot")
+  
+```
+
+```{r}
+sep_plot_race = function(df, r){
+  df =
+    df |> 
+    filter(race == r)
+  
+  plot = separationplot(pred = df$p_hat, 
+               actual = df$status,
+               heading = r,
+               newplot = F)
+  
+}
+```
