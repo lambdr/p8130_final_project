@@ -226,6 +226,7 @@ brier_score <- mean(predicted_prob-breast_cancer$status)
 brier_score
 
 # a brier score of 0 means perfect accuracy
+#measuring accuracy of probabilistic predictions
 ```
 
 
