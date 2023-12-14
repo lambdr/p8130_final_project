@@ -6,7 +6,6 @@ output: github_document
 ```{r load packages and default options, message = FALSE}
 # Load packages
 library(tidyverse)
-library(survival)
 library(broom)
 library(knitr)
 library(modelr)
@@ -74,6 +73,7 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
     x6th_stage = as_factor(x6th_stage),
     differentiate = as_factor(differentiate),
     a_stage = as_factor(a_stage),
+    root_tumor_size = sqrt(tumor_size),
     estrogen_status = as_factor(estrogen_status),
     progesterone_status = as_factor(progesterone_status),
     status = case_match(status,
@@ -82,7 +82,7 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
     regional_prop = regional_node_positive/regional_node_examined
   ) |> 
   select(-c(regional_node_positive, regional_node_examined, survival_months,
-            t_stage, n_stage, grade))
+            t_stage, n_stage, grade, tumor_size))
 ```
 
 
@@ -95,7 +95,7 @@ unique(breast_cancer$`x6th_stage`)
 ```{r construct full model}
 logistic_model =
   breast_cancer |> 
-  glm(status ~ ., data = _, family = binomial())
+  glm(status ~ . + estrogen_status*progesterone_status, data = _, family = binomial())
 ```
 
 ```{r optimize model AIC}
@@ -103,8 +103,7 @@ opt_model =
   logistic_model |> 
   MASS::stepAIC(
     direction = "both",
-    k = 2,
-    trace = 0)
+    k = 2)
 ```
 
 ```{r}
@@ -113,6 +112,9 @@ opt_model |>
 
 opt_model |> 
   tidy()
+
+opt_model |> 
+  car::vif()
 ```
 
 ```{r add prediction and residual}
@@ -186,5 +188,28 @@ breast_cancer %>%
 breast_cancer %>%
   ggplot(aes(x = status)) +
   geom_bar()
+```
+
+```{r tumor size transformation hist, echo = FALSE}
+tumor_plot = 
+  breast_cancer |> 
+  mutate(tumor_size = root_tumor_size^2) |> 
+  ggplot(aes(x = tumor_size)) + 
+  geom_histogram(alpha = 0.8, col = I("black")) +
+  labs(
+    x = "Tumor size (mm)",
+    y = "Frequency"
+  )
+  
+tumor_plot_sq = 
+  breast_cancer |> 
+  ggplot(aes(x = root_tumor_size)) + 
+  geom_histogram(alpha = 0.8, col = I("black")) +
+  labs(
+    x = "Square root of tumor size",
+    y = "Frequency"
+  )
+
+ggpubr::ggarrange(tumor_plot, tumor_plot_sq)
 ```
 
