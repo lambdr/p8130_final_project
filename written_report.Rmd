@@ -52,14 +52,14 @@ Most recently, breast cancer survival rates have increased and number of deaths 
 ## Methods
 
 #### Data source
-
+  
 We obtained a deidentified set containing data on 4024 breast cancer patients. this dataset contains both demographic information, such as patient age, race, and marital status, clinical information such as tumor stage, tumor size, hormone therapies (progesterone and estrogen), regional node positive, and regional node examined; and outcome information: the number of months the patient had survived prior to study conclusion, and their alive/dead status at the end of the study.
 
 #### Data cleaning
+  
+We decided to combine the regional node positive and regional node examined variables into a "regional node proportion positive" variable. This variable, but neither the node positive nor node examined variables were in the model. Further, we decided to discard the T stage and N stage variables, as they captured information already contained in the AJCC 6th stage variable. We also excluded the grade variable, as it captured the same clinical information as the differentiate variable. Due to the skewness in the distribution of the tumor size, we applied a square root transformation to that variable (**Supplemental Figure 1**).
 
-We decided to combine the regional node positive and regional node examined variables into a "regional node proportion positive" variable. This variable, but neither the node positive nor node examined variables were in the model. Further, we decided to discard the T stage and N stage variables, as they captured information already contained in the AJCC 6th stage variable. We also excluded the grade variable, as it captured the same patient information as the differentiate variable.
-
-```{r data import and tidying, echo = FALSE, message = FALSE}
+```{r data import and tidying, include = FALSE}
 breast_cancer <- read_csv('data/Project_2_data.csv') |> 
   janitor::clean_names() |> 
   rename(regional_node_positive = reginol_node_positive) |> 
@@ -83,30 +83,50 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
 
 
 #### Model construction
-
+  
 We decided to use logistic regression model to estimate the risk of patient death within the followup window. Formally, we assumed that an for an individual, with probability *p* to die after receiving a breast cancer diagnosis, the log-odds of *p* was linear, i.e.
 
 $logit(p_i) = \mathbf{X}\beta+ \epsilon_i$
 
-Where ***X*** is the m x n design matrix, and $\beta$ is a vector in $\mathbb{R}^n$.
+Where ***X*** is the n x p design matrix, and $\beta$ is a vector in $\mathbb{R}^p$.
+
+In addition to the covariates we included the following interaction terms [].
+
+```{r construct full model, include = FALSE}
+logistic_model =
+  breast_cancer |> 
+  glm(status ~ . + estrogen_status*progesterone_status, 
+      data = _, family = binomial())
+```
+
 
 #### Model selection
-
+  
 We considered all We used a criterion-based method, utilizing Akaike Information Criterion (AIC) to assess the performance of our models.
+<!-- ref: https://ieeexplore.ieee.org/document/1311138 -->
+
+```{r optimize model AIC, include = FALSE}
+opt_model =
+  logistic_model |> 
+  MASS::stepAIC(
+    direction = "both",
+    k = 2,
+    trace = 0)
+```
 
 #### Model validation
-
+  
 We performed [size] cross-validation to assess the performance of our model.
 
 #### Software
-
+  
 The aforementioned analyses were carried out using R 4.3.1 and RStudio Version 2023.06.2+561.
 
 ## Results
 
 #### Model construction and selection
 
-The variables that were identified as important were xyz, and not 
+We used a logistic model coupled with criterion-based stepwise regression to determine which variables were useful in predicting the risk of death in breast cancer patients. The variables that were identified as important were age, race, marital status, AJCC 6th stage, differentiate, estrogen status, progesterone status, tumor size, and regional node positive proportion. The variables that were not identified as important by the model were whether the tumor was Stage A and the interaction between estrogen and progresterone status. For a list of model coefficients see **Supplemental Table 1**.
 
 #### Diagnostics
 
@@ -124,8 +144,46 @@ Make a table with ROC AUC and Brier scores by race. Discuss
 
 ## References
 
-
+\newpage
 ## Appendices
 
 a. tumor size transformation
+
+```{r tumor size transformation hist, echo = FALSE}
+tumor_plot = 
+  breast_cancer |> 
+  mutate(tumor_size = root_tumor_size^2) |> 
+  ggplot(aes(x = tumor_size)) + 
+  geom_histogram(alpha = 0.8, col = I("black")) +
+  labs(
+    title = "A",
+    x = "Tumor size (mm)",
+    y = "Frequency"
+  )
+  
+tumor_plot_sq = 
+  breast_cancer |> 
+  ggplot(aes(x = root_tumor_size)) + 
+  geom_histogram(alpha = 0.8, col = I("black")) +
+  labs(
+    title = "B",
+    x = "Square root of tumor size",
+    y = "Frequency"
+  )
+
+ggpubr::ggarrange(tumor_plot, tumor_plot_sq)
+```
+  
+**Figure S1.** Transformation of tumor size variable. (A) Before transformation. (B) After square root transformation.
+
+b. model coefficients
+
+#### Table S1. Model Coefficients
+```{r model coefficients, echo = FALSE}
+opt_model |> 
+  tidy() |> 
+  kable(digits = 3)
+```
+
 b. ROC by race +/- sep plots?
+
