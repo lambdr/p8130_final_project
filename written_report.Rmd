@@ -238,7 +238,6 @@ separationplot(pred = breast_cancer$p_hat,
 =======
 
 #### Model validation
->>>>>>> 511626385f31142869e34514def5ef1c40c457ae
 
 This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. Note that cells 1 and 4 (if read from left to right, and top-down) are individuals for which their status prediction was correctly predicted, and cells 2 and 4 are individuals for which their status wasn't correctly predicted.
 
