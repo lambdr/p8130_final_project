@@ -160,7 +160,7 @@ out_of_sample_preds = bind_rows(test_dfs)
 
 #### Model construction and selection
 
-We used a logistic model coupled with criterion-based stepwise regression to determine which variables were useful in predicting the risk of death in breast cancer patients. The variables that were identified as important were age, race, marital status, AJCC 6th stage, differentiate, estrogen status, progesterone status, tumor size, and regional node positive proportion. The variables that were not identified as important by the model were whether the tumor was Stage A and the interaction between estrogen and progresterone status. For a list of model coefficients see **Supplemental Table 1**.
+We used a logistic model coupled with criterion-based stepwise regression to determine which variables were useful in predicting the risk of death in breast cancer patients. The variables that were identified as important were age, race, marital status, AJCC 6th stage, differentiate, estrogen status, progesterone status, tumor size, and regional node positive proportion. Some variables that were not identified as important by the model were whether the tumor was Stage A and the interaction between estrogen and progesterone status. For a list of model coefficients see **Supplemental Table 1**.
 
 #### Diagnostics
 
