@@ -85,9 +85,9 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
 ```
 
 
-### Exploratory Data Analysis
+### Exploratory Data Analysis: Table 1
 
-```{r}
+```{r eda table, echo = FALSE, message = FALSE}
 breast_cancer |>
    mutate(
     status = case_match(status,
@@ -233,7 +233,7 @@ separationplot(pred = breast_cancer$p_hat,
 
 This separation plot shows that the model is able to reasonably effectively distinguish the patients that survived from those that died, though the low value of the predicted probability across the sample shows that it gives low probabilities of dying to all subjects.
 
-#### Model validation: Table 1. 
+#### Model validation: Table 2. 
 
 This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. Note that cells 1 and 4 (if read from left to right, and top-down) are individuals for which their status prediction was correctly predicted, and cells 2 and 4 are individuals for which their status wasn't correctly predicted.
 
