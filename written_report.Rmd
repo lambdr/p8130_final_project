@@ -120,7 +120,7 @@ summary(opt_model)
 
 #### Model validation
   
-We performed 10 cross-validation to assess the performance of our model. Each observation in a dataset will be in 1 of 10 folds such that it gets used as training data 9 times, and as test data once. The predictions are then saved such that each row has an out-of-sample prediction that can be compared to the real value. To test our model's performance, we also calculated ROC-AUC and Brier Score.
+We performed 10 cross-validation to assess the performance of our model. Each observation in a dataset will be in 1 of 10 folds such that it gets used as training data 9 times, and as test data once. The predictions are then saved such that each row has an out-of-sample prediction that can be compared to the real value.
 
 ```{r cross validation, include = FALSE}
 breast_cancer$cv = sample(1:10, size = nrow(breast_cancer), replace = T)
