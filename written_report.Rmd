@@ -193,19 +193,6 @@ brier_score <- mean((predicted_prob-breast_cancer$status)^2)
 
 A brier score was produced to assess the optimal model's performance. Brier score measures the accuracy of probalistic predictions, where a score of 0 indicates perfect accuracy. The optimal model's brier score was `r round(brier_score, 3)`. This suggests that our final model has good probabilistic prediction accuracy. 
 
-#### Table 1. 
-
-This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. We can see that the model is very good at correctly predicting that somebody survived, and rarely predicts the individual died when it didn't. However, the model makes a lot of errors when trying to predict if the individual survived: more than 90% of the total error happens when the model predicts the individual died, and it actually survived. This reflects the fact that the model prefers to predict 0 as a result of the `status` variable being 0 inflated. 
-
-```{r confusion matrix, echo = FALSE}
-#rows are real values
-c_matrix = table(out_of_sample_preds$status, out_of_sample_preds$pred) 
-rownames(c_matrix) = c("Actually Died", "Actually Survived")
-c_matrix |> 
-  kable(col.names = c("Predicted Died", "Predicted Survived"))
-```
-
-
 Separation plots
 
 ```{r add prediction and residual, include = FALSE}
@@ -228,6 +215,18 @@ separationplot(pred = breast_cancer$p_hat,
 **Figure X.** Separation plot of model. Values are stripes, arranged in increasing predicted probability of death. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
 
 This separation plot shows that the model is able to reasonably effectively distinguish the patients that survived from those that died, though the low value of the predicted probability across the sample shows that it gives low probabilities of dying to all subjects.
+
+#### Model validation: Table 1. 
+
+This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. We can see that the model is very good at correctly predicting that somebody survived, and rarely predicts the individual died when it didn't. However, the model makes a lot of errors when trying to predict if the individual survived: more than 90% of the total error happens when the model predicts the individual died, and it actually survived. This reflects the fact that the model prefers to predict 0 as a result of the `status` variable being 0 inflated. 
+
+```{r confusion matrix, echo = FALSE}
+#rows are real values
+c_matrix = table(out_of_sample_preds$status, out_of_sample_preds$pred) 
+rownames(c_matrix) = c("Actually Died", "Actually Survived")
+c_matrix |> 
+  kable(col.names = c("Predicted Died", "Predicted Survived"))
+```
 
 #### Model performance by race
 
