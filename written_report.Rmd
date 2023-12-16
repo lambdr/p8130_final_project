@@ -54,11 +54,11 @@ Most recently, breast cancer survival rates have increased and number of deaths 
 
 #### Data source
   
-We obtained a deidentified set containing data on 4024 breast cancer patients. this dataset contains both demographic information, such as patient age, race, and marital status, clinical information such as tumor stage, tumor size, hormone therapies (progesterone and estrogen), regional node positive, and regional node examined; and outcome information: the number of months the patient had survived prior to study conclusion, and their alive/dead status at the end of the study.
+We obtained a deidentified set containing data on 4024 breast cancer patients. this dataset contains both demographic information, such as patient age, race, and marital status; clinical information such as tumor stage, tumor size, hormone therapies (progesterone and estrogen), regional node positive, and regional node examined; and outcome information: the number of months the patient had survived prior to study conclusion, and their alive/dead status at the end of the study.
 
 #### Data cleaning
   
-We decided to combine the regional node positive and regional node examined variables into a "regional node proportion positive" variable. This variable, but neither the node positive nor node examined variables were in the model. Further, we decided to discard the T stage and N stage variables, as they captured information already contained in the AJCC 6th stage variable. We also excluded the grade variable, as it captured the same clinical information as the differentiate variable. Due to the skewness in the distribution of the tumor size, we applied a square root transformation to that variable (**Supplemental Figure 1**). We also added a `main_stage` variable, which groups all the stages in `6th_stage` so that "IIIA" and "IIIC" are under factor level "III" for example, and added a `white` variable that tells us if the patient is "White" or not, essentially grouping "Black" and "Other" together. Both variables were created in case the reduction of factor levels makes the fit better.
+We combined the regional node positive and regional node examined variables into a "regional node proportion positive" variable. This variable, but neither the node positive nor node examined variables were in the model. Further, we decided to discard the T stage and N stage variables, as they captured information already contained in the AJCC 6th stage variable. We also excluded the grade variable, as it captured the same clinical information as the differentiate variable. Due to the skewness in the distribution of the tumor size, we applied a square root transformation to that variable (**Supplemental Figure 1**). We also added a `main_stage` variable, which groups all the stages in `6th_stage` so that "IIIA" and "IIIC" are under factor level "III" for example, and added a `white` variable that tells us if the patient is "White" or not, essentially grouping "Black" and "Other" together. Both variables were created in case the reduction of factor levels makes the fit better.
 
 ```{r data import and tidying, include = FALSE}
 breast_cancer <- read_csv('data/Project_2_data.csv') |> 
@@ -126,7 +126,7 @@ summary(opt_model)
   
 We performed 10 cross-validation to assess the performance of our model.
 
-```{r}
+```{r cross validation, include = FALSE}
 breast_cancer$cv = sample(1:10, size = nrow(breast_cancer), replace = T)
 
 test_dfs = list(n=10)
@@ -155,7 +155,7 @@ for (i in 1:10){
 }
 ```
 
-```{r}
+```{r out of sample prediction, include = FALSE}
 out_of_sample_preds = bind_rows(test_dfs[[1]], test_dfs[[2]])
 
 for (i in 3:10) {
@@ -165,9 +165,13 @@ for (i in 3:10) {
 }
 ```
 
-```{r}
+#### Table 1. 
+```{r confusion matrix, echo = FALSE}
 #rows are real values
-table(out_of_sample_preds$status, out_of_sample_preds$pred)
+c_matrix = table(out_of_sample_preds$status, out_of_sample_preds$pred) 
+rownames(c_matrix) = c("Actually Survived", "Actually Died")
+c_matrix |> 
+  kable(col.names = c("Predicted Survived", "Predicted Died"))
 ```
 
 
@@ -189,7 +193,7 @@ ROC, Brier score
 
 ROC for full model on in-sample data:
 
-```{r}
+```{r roc curve, echo = FALSE, message = FALSE}
 p = predict(opt_model,type="response")
 
 y = breast_cancer$status
@@ -206,7 +210,7 @@ Separation plots
 
 Make a table with ROC AUC and Brier scores by race. Discuss
 
-```{r}
+```{r aucs by race, include = FALSE}
 tmp = roc(y[breast_cancer$race == "White"],p[breast_cancer$race == "White"])
 white_auc = tmp$auc
 
@@ -217,10 +221,10 @@ tmp = roc(y[breast_cancer$race == "Other"],p[breast_cancer$race == "Other"])
 other_auc = tmp$auc
 ```
 
-```{r}
+```{r table of performance by race, echo = FALSE}
 data.frame(race = c("White", "Black", "Other"),
-              roc_auc = c(white_auc, black_auc, other_auc)) %>%
-  knitr::kable(, digits = 3)
+           roc_auc = c(white_auc, black_auc, other_auc)) %>%
+  kable(digits = 3)
 ```
 
 
