@@ -105,7 +105,6 @@ logistic_model =
 #### Model selection
   
 We used a criterion-based method, utilizing Akaike Information Criterion (AIC) to assess the performance of our models.
-<!-- ref: https://ieeexplore.ieee.org/document/1311138 -->
 
 ```{r optimize model AIC, include = FALSE}
 opt_model =
@@ -211,13 +210,13 @@ separationplot(pred = breast_cancer$p_hat,
                newplot = F)
 ```
 
-**Figure X.** Separation plot of model. Values are stripes, arranged in increasing predicted probability of death. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
+**Figure 2.** Separation plot of model. Values are stripes, arranged in increasing predicted probability of death. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
 
 This separation plot shows that the model is able to reasonably effectively distinguish the patients that survived from those that died, though the low value of the predicted probability across the sample shows that it gives low probabilities of dying to all subjects.
 
 #### Model validation: Table 1. 
 
-This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. We can see that the model is very good at correctly predicting that somebody survived, and rarely predicts the individual died when it didn't. However, the model makes a lot of errors when trying to predict if the individual survived: more than 90% of the total error happens when the model predicts the individual died, and it actually survived. This reflects the fact that the model prefers to predict 0 as a result of the `status` variable being 0 inflated. 
+This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. Note that cells 1 and 4 (if read from left to right, and top-down) are individuals for which their status prediction was correctly predicted, and cells 2 and 4 are individuals for which their status wasn't correctly predicted.
 
 ```{r confusion matrix, echo = FALSE}
 #rows are real values
@@ -266,13 +265,17 @@ data.frame(race = c("White", "Black", "Other"),
 
 ## Discussion
 
-We constructed a model to predict the survival of breast cancer patients, and optimized it using a criterion based-selection approach.
+We constructed a model to predict the survival of breast cancer patients, and optimized it using a criterion based-selection approach. Most of the covariates in the dataset were identified by AIC as being useful predictors, with the exception of Stage A. Despite the combination of progesterone (PR+) and estrogen (ER+) receptors in breast cancer being of note clinically, our model did not find the interaction term between these variables to be worth including. This suggests that the adjusted odds ratio for risk of death in ER+/PR+ is 1.
+
+The most significant predictor of death was the regional node positive proportion variable; an individual with 100% positive regional nodes has 3.5 times the odds of death compared with an individual who had no positive regional nodes. Other highly significant predictors were cancer stage (specifically whether the patient was IIIC),  whether the tumor was well differentiated (i.e. healthy cells), hormone receptors on the tumor (ER+ and PR+), and age.
+
+Our model was effective at classifying patients who survived, but performed less well at classifying patients who died when using a $\hat{p}=0.5$ as the cutoff. The separation plot we constructed suggests that a lower cutoff, such as 0.35 may be more appropriate, and further tuning may improve model performance.
 
 Our model was effective at classifying patients who survived, but performed less well at classifying patients who died when using a $\hat{p}=0.5$ as the cutoff. The separation plot we constructed suggests that a lower cutoff, such as 0.35 may be more appropriate, and further tuning may improve model performance.
 
 Furthermore, conflicting conclusions occurred while assessing model performance by race. According to the ROC AUC values, the model performed better for White patients, then Black patients, then 'Other' race patients. On the contrary, the brier scores by race suggests that the model most accurately predicted probabilities for 'Other' race patients, followed by White and Black patients.
 
-
+From our cross-validation confusion matrix, we can see that the model is very good at correctly predicting that somebody survived, and rarely predicts the individual died when it didn't. However, the model makes a lot of errors when trying to predict if the individual survived: more than 90% of the total error happens when the model predicts the individual died, and it actually survived. This reflects the fact that the model prefers to predict 0 as a result of the `status` variable being 0 inflated. 
 
 
 ## Author Contributions
@@ -283,7 +286,11 @@ American Cancer Society. Breast Cancer Stages. Atlanta, GA: American Cancer Soci
 
 Division of Cancer Prevention and Control, Centers for Disease Control and Prevention. Breast Cancer in Men. Atlanta, GA: Centers for Disease Control; 2023 July 25. Available from: [https://www.cdc.gov/cancer/breast/men/](https://www.cdc.gov/cancer/breast/men/index.htm#:~:text=Breast%20cancer%20is%20most%20often,is%20found%20in%20a%20man.&text=Invasive%20ductal%20carcinoma.,parts%20of%20the%20breast%20tissue.)
 
+Greenhill B, Ward MD, Sacks A. The separation plot: A new visual method for evaluating the fit of binary models. American Journal of Political Science. 2011;55(4):991–1002. doi:[10.1111/j.1540-5907.2011.00525.x](https://www.jstor.org/stable/23025132)
+
 Mayo Clinic. Breast Cancer. Rochester, MN: Mayo Foundation for Medical Education and Research. Available from: [https://www.mayoclinic.org/diseases-conditions/breast-cancer](https://www.mayoclinic.org/diseases-conditions/breast-cancer/symptoms-causes/syc-20352470)
+
+Stoica P, Selen Y. Model-order selection: a review of information criterion rules. IEEE Signal Processing Magazine. 2004;21(4):36–47. [doi:10.1109/msp.2004.1311138](https://ieeexplore.ieee.org/document/1311138) 
 
 Young Survival Coalition. Breast Cancer 101. New York, NY: Young Survival Coalition. Available from: [https://youngsurvival.org/breast-cancer](https://youngsurvival.org/breast-cancer-101?gad_source=1&gclid=CjwKCAiAg9urBhB_EiwAgw88mcI-WsyaKEn-nTaWET71dtNVebk2y3qHMeLMjBnxk42z-sE5LMbPPRoCLZYQAvD_BwE)
 
@@ -292,12 +299,27 @@ Young Survival Coalition. Breast Cancer 101. New York, NY: Young Survival Coalit
 #### Software
   
 The aforementioned analyses were carried out using R 4.3.1 and RStudio Version 2023.06.2+561.
+
 \newpage
-## Appendices
+## Supplemental Information
 
-a. tumor size transformation
+#### Table S1. Model Coefficients
+```{r model coefficients, echo = FALSE}
+opt_model |> 
+  tidy() |> 
+  mutate(odds_pe = round(exp(estimate), 2),
+         ci_low = round(exp(estimate - 1.96*std.error), 2),
+         ci_high = round(exp(estimate + 1.96*std.error), 2),
+         adjusted_odds_ratio = str_c(odds_pe, " (", ci_low, 
+                                     ", ", ci_high, ")")) |>
+  select(term, estimate, std.error, adjusted_odds_ratio, p.value, statistic) |> 
+  filter(term != "(Intercept)") |> 
+  kable(digits = 3)
+```
 
-```{r tumor size transformation hist, echo = FALSE}
+\newpage
+### Supplemental figures
+```{r tumor size transformation hist, echo = FALSE, message = FALSE}
 tumor_plot = 
   breast_cancer |> 
   mutate(tumor_size = root_tumor_size^2) |> 
@@ -324,14 +346,6 @@ ggpubr::ggarrange(tumor_plot, tumor_plot_sq)
   
 **Figure S1.** Transformation of tumor size variable. (A) Before transformation. (B) After square root transformation.
 
-b. model coefficients
-
-#### Table S1. Model Coefficients
-```{r model coefficients, echo = FALSE}
-opt_model |> 
-  tidy() |> 
-  kable(digits = 3)
-```
-
-b. ROC by race +/- sep plots?
-
+\newpage
+![](images/sep_plot_race.png)
+**Figure S2.** Separation plots by race. Values are stripes, arranged in increasing predicted probability of death in (A) White, (B) Black, and (C) Other race patients. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
