@@ -229,8 +229,6 @@ This separation plot shows that the model is able to reasonably effectively dist
 
 #### Model performance by race
 
-Make a table with ROC AUC and Brier scores by race. Discuss
-
 ```{r aucs by race, include = FALSE}
 tmp = roc(y[breast_cancer$race == "White"],p[breast_cancer$race == "White"])
 white_auc = tmp$auc
@@ -257,14 +255,14 @@ other_brier_score <- mean((other_breast_cancer$predicted_prob - other_breast_can
 ```
 
 
+Lastly, model performance by race was explored using ROC AUC and Brier score values. The values by race are presented in the table below. 
+
 ```{r table of performance by race, echo = FALSE}
 data.frame(race = c("White", "Black", "Other"),
            roc_auc = c(white_auc, black_auc, other_auc),
            brier_score = c(white_brier_score, black_brier_score, other_brier_score)) %>%
   kable(digits = 3)
 ```
-
-
 
 ## Discussion
 
