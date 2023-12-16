@@ -167,14 +167,14 @@ for (i in 3:10) {
 
 #### Table 1. 
 
-
+This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. We can see that the model is very good at correctly predicting that somebody survived, and rarely predicts the individual died when it didn't. However, the model makes a lot of errors when trying to predict if the individual survived: more than 90% of the total error happens when the model predicts the individual died, and it actually survived. This reflects the fact that the model prefers to predict 0 as a result of the `status` variable being 0 inflated. 
 
 ```{r confusion matrix, echo = FALSE}
 #rows are real values
 c_matrix = table(out_of_sample_preds$status, out_of_sample_preds$pred) 
-rownames(c_matrix) = c("Actually Survived", "Actually Died")
+rownames(c_matrix) = c("Actually Died", "Actually Survived")
 c_matrix |> 
-  kable(col.names = c("Predicted Survived", "Predicted Died"))
+  kable(col.names = c("Predicted Died", "Predicted Survived"))
 ```
 
 
