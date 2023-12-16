@@ -57,7 +57,7 @@ We obtained a deidentified set containing data on 4024 breast cancer patients. t
 
 #### Data cleaning
   
-We decided to combine the regional node positive and regional node examined variables into a "regional node proportion positive" variable. This variable, but neither the node positive nor node examined variables were in the model. Further, we decided to discard the T stage and N stage variables, as they captured information already contained in the AJCC 6th stage variable. We also excluded the grade variable, as it captured the same clinical information as the differentiate variable. Due to the skewness in the distribution of the tumor size, we applied a square root transformation to that variable (**Supplemental Figure 1**).
+We decided to combine the regional node positive and regional node examined variables into a "regional node proportion positive" variable. This variable, but neither the node positive nor node examined variables were in the model. Further, we decided to discard the T stage and N stage variables, as they captured information already contained in the AJCC 6th stage variable. We also excluded the grade variable, as it captured the same clinical information as the differentiate variable. Due to the skewness in the distribution of the tumor size, we applied a square root transformation to that variable (**Supplemental Figure 1**). We also added a `main_stage` variable, which groups all the stages in `6th_stage` so that "IIIA" and "IIIC" are under factor level "III" for example, and added a `white` variable that tells us if the patient is "White" or not, essentially grouping "Black" and "Other" together. Both variables were created in case the reduction of factor levels makes the fit better.
 
 ```{r data import and tidying, include = FALSE}
 breast_cancer <- read_csv('data/Project_2_data.csv') |> 
@@ -75,8 +75,13 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
     status = case_match(status,
                         "Dead" ~ 1,
                         "Alive" ~ 0),
-    regional_prop = regional_node_positive/regional_node_examined
-  ) |> 
+    regional_prop = regional_node_positive/regional_node_examined,
+    main_stage = case_when(
+    str_detect(x6th_stage, "III") ~ "III",
+    str_detect(x6th_stage, "II") ~ "II",
+    str_detect(x6th_stage, "I") ~ "I",
+    ),
+    white = ifelse(race == "White", "White", "POC")) |> 
   select(-c(regional_node_positive, regional_node_examined, survival_months,
             t_stage, n_stage, grade, tumor_size))
 ```
