@@ -35,7 +35,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Abstract
 
-Studies have shown that there are many risk factors combinations for breast cancer. Fortunately, breast cancer survival rates have increased and number of deaths have decreased. Nevertheless, it is important to explore the most significant breast cancer risk factors. To do so, we used a dataset containing demographic and risk factors information, and survival status by patients. After cleaning and exploring the data, we dropped highly correlated variables, combined others, and performed transformations. We then built the full model, containing an interaction between estrogen and progesterone status, and selected the best model using Akaike Information Criterion (AIC). Overall, our final model had a good ROC-AUC and Brier score values. 
+Studies have shown that there are many risk factor combinations for breast cancer. Fortunately, breast cancer survival rates have increased and number of deaths have decreased. Nevertheless, it is important to explore the most significant breast cancer risk factors to identify at-risk groups for further research. To do so, we used a dataset containing demographic and risk factors information, and survival status by patients. After cleaning and exploring the data, we dropped highly correlated variables, combined others, and performed transformations. We then built the full model, containing an interaction between estrogen and progesterone status, and selected the best model using Akaike Information Criterion (AIC). Overall, our final model had a good ROC-AUC and Brier score values. 
 
 ## Introduction
 
@@ -190,34 +190,34 @@ predicted_prob <- predict(opt_model, type = 'response')
 brier_score <- mean((predicted_prob-breast_cancer$status)^2)
 ```
 
-A brier score was produced to assess the optimal model's performance. Brier score measures the accuracy of probalistic predictions, where a score of 0 indicates perfect accuracy. The optimal model's brier score was `r round(brier_score, 3)`. This suggests that our final model has good probabilistic prediction accuracy. 
+A brier score was produced to assess the optimal model's performance. Brier score measures the accuracy of probabilistic predictions, where a score of 0 indicates perfect accuracy. The optimal model's brier score was `r round(brier_score, 3)`. This suggests that our final model has good probabilistic prediction accuracy. 
 
+This separation plot shows that the model is able to reasonably effectively distinguish the patients that survived from those that died, though the low value of the predicted probability across the sample shows that it gives low probabilities of dying to all subjects.
 
 ```{r add prediction and residual, include = FALSE}
-# This code chunk is probably redundant but I need it for now
 breast_cancer = 
   breast_cancer |> 
   add_residuals(opt_model) |> 
   add_predictions(opt_model) |> 
   mutate(p_hat = 1/(1 + exp(-pred)))
   
-```
-
-<!-- https://www.jstor.org/stable/23025132 -->
-```{r separation plot, echo = FALSE}
 separationplot(pred = breast_cancer$p_hat, 
                actual = breast_cancer$status,
                newplot = F)
+# This plot outputs a dataframe object that renders locally in R only
+# We saved it as a png and then inserted it directly
 ```
+![](images/sep_plot_full.png)
 
 **Figure 2.** Separation plot of model. Values are stripes, arranged in increasing predicted probability of death. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
 
-This separation plot shows that the model is able to reasonably effectively distinguish the patients that survived from those that died, though the low value of the predicted probability across the sample shows that it gives low probabilities of dying to all subjects.
 
-#### Model validation: Table 1. 
+
+#### Model validation
 
 This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. Note that cells 1 and 4 (if read from left to right, and top-down) are individuals for which their status prediction was correctly predicted, and cells 2 and 4 are individuals for which their status wasn't correctly predicted.
 
+**Table 1.** Confusion matrix of the model
 ```{r confusion matrix, echo = FALSE}
 #rows are real values
 c_matrix = table(out_of_sample_preds$status, out_of_sample_preds$pred) 
@@ -254,12 +254,15 @@ other_brier_score <- mean((other_breast_cancer$predicted_prob - other_breast_can
 ```
 
 
-Lastly, model performance by race was explored using ROC AUC and Brier score values. The values by race are presented in the table below. 
+Lastly, model performance by race was explored using ROC AUC and Brier score values. The values by race are presented in the table below. The highest AUC was obtained for white patients, while the lowest brier score was obtained for the Other racial group.
 
+
+**Table 2.** Model performance by race
 ```{r table of performance by race, echo = FALSE}
 data.frame(race = c("White", "Black", "Other"),
            roc_auc = c(white_auc, black_auc, other_auc),
-           brier_score = c(white_brier_score, black_brier_score, other_brier_score)) %>%
+           brier_score = c(white_brier_score, black_brier_score,
+                           other_brier_score)) |> 
   kable(digits = 3)
 ```
 
