@@ -206,6 +206,19 @@ plot(tmp)
 print(tmp$auc)
 ```
 
+```{r brier score full model, echo=FALSE, message=FALSE}
+#adding predicted prob to model
+breast_cancer <- breast_cancer %>%
+  mutate(predicted_prob = predict(opt_model, type = 'response'))
+
+predicted_prob <- predict(opt_model, type = 'response')
+
+brier_score <- mean((predicted_prob-breast_cancer$status)^2)
+```
+
+
+
+
 
 Separation plots
 
@@ -225,14 +238,6 @@ other_auc = tmp$auc
 ```
 
 ```{r brier by race, include = FALSE}
-#adding predicted prob to model
-breast_cancer <- breast_cancer %>%
-  mutate(predicted_prob = predict(opt_model, type = 'response'))
-
-predicted_prob <- predict(opt_model, type = 'response')
-
-brier_score <- mean((predicted_prob-breast_cancer$status)^2)
-
 white_breast_cancer <- breast_cancer %>%
   filter(race == 'White')
 white_brier_score <- mean((white_breast_cancer$predicted_prob - white_breast_cancer$status)^2)
