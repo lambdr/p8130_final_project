@@ -224,9 +224,33 @@ tmp = roc(y[breast_cancer$race == "Other"],p[breast_cancer$race == "Other"])
 other_auc = tmp$auc
 ```
 
+```{r brier by race, include = FALSE}
+#adding predicted prob to model
+breast_cancer <- breast_cancer %>%
+  mutate(predicted_prob = predict(opt_model, type = 'response'))
+
+predicted_prob <- predict(opt_model, type = 'response')
+
+brier_score <- mean((predicted_prob-breast_cancer$status)^2)
+
+white_breast_cancer <- breast_cancer %>%
+  filter(race == 'White')
+white_brier_score <- mean((white_breast_cancer$predicted_prob - white_breast_cancer$status)^2)
+
+black_breast_cancer <- breast_cancer %>%
+  filter(race == 'Black')
+black_brier_score <- mean((black_breast_cancer$predicted_prob - black_breast_cancer$status)^2)
+
+other_breast_cancer <- breast_cancer %>%
+  filter(race == 'Other')
+other_brier_score <- mean((other_breast_cancer$predicted_prob - other_breast_cancer$status)^2)
+```
+
+
 ```{r table of performance by race, echo = FALSE}
 data.frame(race = c("White", "Black", "Other"),
-           roc_auc = c(white_auc, black_auc, other_auc)) %>%
+           roc_auc = c(white_auc, black_auc, other_auc),
+           brier_score = c(white_brier_score, black_brier_score, other_brier_score)) %>%
   kable(digits = 3)
 ```
 
