@@ -43,11 +43,7 @@ Breast cancer occurs due to abnormal cell growths in breast tissue. Although it 
 
 Additionally, the patient's breast cancer stage is important to consider when determining the severity of the cancer and how to treat it. The American Joint Committee on Cancer (AJCC) TNM system is the most common, and contains clinical and pathologic systems. The pathologic stage is determined by examining the tissue removed during surgery, while the clinical stage is based on results of a physical exam, biopsy, and imaging tests. Nevertheless, both systems are composed of the size of the tumor, the spread to nearby lymph nodes and/or to distant sites, their estrogen and/or progesterone receptor status, the grade of the cancer, and if the cancer makes too much of HER2 protein. 
 
-
-
-Stages are most commonly based on 
-
-Most recently, breast cancer survival rates have increased and number of deaths decreased. 
+Although, most recently, breast cancer survival rates have increase and number of deaths decreased, it would be important to explore the risk factors of breast cancer. For this project, we will investigate the odds of breast cancer survival given most of the risk factors previously mentioned.
 
 
 ## Methods
@@ -215,7 +211,6 @@ predicted_prob <- predict(opt_model, type = 'response')
 
 brier_score <- mean((predicted_prob-breast_cancer$status)^2)
 ```
-
 
 
 
