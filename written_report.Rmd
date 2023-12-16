@@ -202,9 +202,9 @@ c_matrix |>
   kable(col.names = c("Predicted Died", "Predicted Survived"))
 ```
 
-<<<<<<< HEAD
+
 Separation plots
-=======
+
 ```{r add prediction and residual, include = FALSE}
 # This code chunk is probably redundant but I need it for now
 breast_cancer = 
@@ -225,7 +225,6 @@ separationplot(pred = breast_cancer$p_hat,
 **Figure X.** Separation plot of model. Values are stripes, arranged in increasing predicted probability of death. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
 
 This separation plot shows that the model is able to reasonably effectively distinguish the patients that survived from those that died, though the low value of the predicted probability across the sample shows that it gives low probabilities of dying to all subjects.
->>>>>>> 19eea427594f950975b935ec060bbaf09fdf5638
 
 #### Model performance by race
 
@@ -266,7 +265,6 @@ data.frame(race = c("White", "Black", "Other"),
 
 ## Discussion
 
-
 We constructed a model to predict the survival of breast cancer patients, and optimized it using a criterion based-selection approach.
 
 Our model was effective at classifying patients who survived, but performed less well at classifying patients who died when using a $\hat{p}=0.5$ as the cutoff. The separation plot we constructed suggests that a lower cutoff, such as 0.35 may be more appropriate, and further tuning may improve model performance.
@@ -274,6 +272,16 @@ Our model was effective at classifying patients who survived, but performed less
 ## Author Contributions
 
 ## References
+
+American Cancer Society. Breast Cancer Stages. Atlanta, GA: American Cancer Society, Inc. Available from: [https://www.cancer.org/cancer/types/breast-cancer/](https://www.cancer.org/cancer/types/breast-cancer/understanding-a-breast-cancer-diagnosis/stages-of-breast-cancer.html#:~:text=The%20earliest%20stage%20breast%20cancers,means%20cancer%20has%20spread%20more.)
+
+Division of Cancer Prevention and Control, Centers for Disease Control and Prevention. Breast Cancer in Men. Atlanta, GA: Centers for Disease Control; 2023 July 25. Available from: [https://www.cdc.gov/cancer/breast/men/](https://www.cdc.gov/cancer/breast/men/index.htm#:~:text=Breast%20cancer%20is%20most%20often,is%20found%20in%20a%20man.&text=Invasive%20ductal%20carcinoma.,parts%20of%20the%20breast%20tissue.)
+
+Mayo Clinic. Breast Cancer. Rochester, MN: Mayo Foundation for Medical Education and Research. Available from: [https://www.mayoclinic.org/diseases-conditions/breast-cancer](https://www.mayoclinic.org/diseases-conditions/breast-cancer/symptoms-causes/syc-20352470)
+
+Young Survival Coalition. Breast Cancer 101. New York, NY: Young Survival Coalition. Available from: [https://youngsurvival.org/breast-cancer](https://youngsurvival.org/breast-cancer-101?gad_source=1&gclid=CjwKCAiAg9urBhB_EiwAgw88mcI-WsyaKEn-nTaWET71dtNVebk2y3qHMeLMjBnxk42z-sE5LMbPPRoCLZYQAvD_BwE)
+
+
 
 #### Software
   
