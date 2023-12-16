@@ -174,7 +174,7 @@ tmp = roc(y,p)
 model_auc = tmp$auc
 ```
 
-This is the ROC-AUC for full model on in-sample data, which is a measure that uses the model's specificity and sensitivity to get a score bounded by 0 and 1, where 1 is best. This model's ROC-AUC is `r model_auc`. 
+This is the ROC-AUC for full model on in-sample data, which is a measure that uses the model's specificity and sensitivity to get a score bounded by 0 and 1, where 1 is best. This model's ROC-AUC is `r round(model_auc, 3)`. 
 
 ```{r roc curve, echo = FALSE, message = FALSE}
 plot(tmp)
@@ -191,7 +191,7 @@ predicted_prob <- predict(opt_model, type = 'response')
 brier_score <- mean((predicted_prob-breast_cancer$status)^2)
 ```
 
-A brier score was produced to assess the optimal model's performance. Brier score measures the accuracy of probablistic predictions, where a score of 0 indicates perfect accuracy. The optimal model's brier score was `r brier_score`. This suggests that our final model has good probablistic prediction accuracy. 
+A brier score was produced to assess the optimal model's performance. Brier score measures the accuracy of probalistic predictions, where a score of 0 indicates perfect accuracy. The optimal model's brier score was `r round(brier_score, 3)`. This suggests that our final model has good probablistic prediction accuracy. 
 
 #### Table 1. 
 
