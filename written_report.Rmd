@@ -307,6 +307,7 @@ From our cross-validation confusion matrix, we can see that the model is very go
 
 
 ## Author Contributions
+Guadalupe wrote the abstract and introduction and performed model diagnostics (brier scores). Gustavo performed exploratory data analysis, model performance, and model diagnostics (ROC curves). Derek did the data cleaning, model construction, and diagnostics (separation plot). All authors contributed to the writing of the results and the discussion.
 
 ## References
 
