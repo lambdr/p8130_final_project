@@ -210,7 +210,7 @@ separationplot(pred = breast_cancer$p_hat,
                newplot = F)
 ```
 
-**Figure X.** Separation plot of model. Values are stripes, arranged in increasing predicted probability of death. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
+**Figure 2.** Separation plot of model. Values are stripes, arranged in increasing predicted probability of death. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
 
 This separation plot shows that the model is able to reasonably effectively distinguish the patients that survived from those that died, though the low value of the predicted probability across the sample shows that it gives low probabilities of dying to all subjects.
 
@@ -297,9 +297,25 @@ Young Survival Coalition. Breast Cancer 101. New York, NY: Young Survival Coalit
 The aforementioned analyses were carried out using R 4.3.1 and RStudio Version 2023.06.2+561.
 
 \newpage
-## Supplemental Informations
+## Supplemental Information
 
-```{r tumor size transformation hist, echo = FALSE}
+#### Table S1. Model Coefficients
+```{r model coefficients, echo = FALSE}
+opt_model |> 
+  tidy() |> 
+  mutate(odds_pe = round(exp(estimate), 2),
+         ci_low = round(exp(estimate - 1.96*std.error), 2),
+         ci_high = round(exp(estimate + 1.96*std.error), 2),
+         adjusted_odds_ratio = str_c(odds_pe, " (", ci_low, 
+                                     ", ", ci_high, ")")) |>
+  select(term, estimate, std.error, adjusted_odds_ratio, p.value, statistic) |> 
+  filter(term != "(Intercept)") |> 
+  kable(digits = 3)
+```
+
+\newpage
+### Supplemental figures
+```{r tumor size transformation hist, echo = FALSE, message = FALSE}
 tumor_plot = 
   breast_cancer |> 
   mutate(tumor_size = root_tumor_size^2) |> 
@@ -326,21 +342,6 @@ ggpubr::ggarrange(tumor_plot, tumor_plot_sq)
   
 **Figure S1.** Transformation of tumor size variable. (A) Before transformation. (B) After square root transformation.
 
-b. model coefficients
-
-#### Table S1. Model Coefficients
-```{r model coefficients, echo = FALSE}
-opt_model |> 
-  tidy() |> 
-  mutate(odds_pe = round(exp(estimate), 2),
-         ci_low = round(exp(estimate - 1.96*std.error), 2),
-         ci_high = round(exp(estimate + 1.96*std.error), 2),
-         adjusted_odds_ratio = str_c(odds_pe, " (", ci_low, 
-                                     ", ", ci_high, ")")) |>
-  select(term, estimate, std.error, adjusted_odds_ratio, p.value, statistic) |> 
-  filter(term != "(Intercept)") |> 
-  kable(digits = 3)
-```
-
-b. ROC by race +/- sep plots?
-
+\newpage
+![](images/sep_plot_race.png)
+**Figure S2.** Separation plots by race. Values are stripes, arranged in increasing predicted probability of death in (A) White, (B) Black, and (C) Other race patients. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
