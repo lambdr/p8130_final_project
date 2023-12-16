@@ -1,6 +1,6 @@
 ---
 title: "P8130 Final Project: Predicting Breast Cancer Survival"
-author: "Guadalupe Antonio Lopez, Gustavo Garcia-Franceschini, Derek Lamb"
+author: "Guadalupe Antonio Lopez (GA2612), Gustavo Garcia-Franceschini (GEG2145), Derek Lamb (DRL2168)"
 header-includes:
     - \usepackage{setspace}\doublespacing
 
