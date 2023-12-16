@@ -270,17 +270,18 @@ other_brier_score
 
 
 # Separation plots
-
-```{r separation plot}
-# https://www.jstor.org/stable/23025132
-library(separationplot)
+<!-- https://www.jstor.org/stable/23025132 -->
+```{r separation plot, echo = FALSE}
 separationplot(pred = breast_cancer$p_hat, 
                actual = breast_cancer$status,
-               heading = "Prediciton Plot")
-  
+               newplot = F)
 ```
 
-```{r}
+**Figure X.** Separation plot of model. Values are stripes, arranged in increasing predicted probability of death. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
+
+This separation plot shows that the model is able to reasonably effectively distinguish the patients that survived from those that died, though the low value of the predicted probability across the sample shows that it gives low probabilities of dying to all subjects.
+
+```{r sep plot by race}
 sep_plot_race = function(df, r){
   df =
     df |> 
@@ -293,3 +294,7 @@ sep_plot_race = function(df, r){
   
 }
 ```
+
+We constructed a model to predict the survival of breast cancer patients, and optimized it using a criterion based-selection approach.
+
+Our model was effective at classifying patients who survived, but performed less well at classifying patients who died when using a $\hat{p}=0.5$ as the cutoff. The separation plot we constructed suggests that a lower cutoff, such as 0.35 may be more appropriate, and further tuning may improve model performance.
