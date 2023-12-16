@@ -87,6 +87,8 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
 
 ### Exploratory Data Analysis: Table 1
 
+**Table 1** shows summary statistics for demographic variables, along with some variables related to breast cancer. They are split by whether they survived or not, with the first column being the summary statistics for the entire dataset. We noticed that although individuals had similar ages despite their status, Black individuals and widows died at a disproportional rate. Those that died also had higher root_tumor_size and regional_prop, which are variables related to cancer where higher values are more alarming.
+
 ```{r eda table, echo = FALSE, message = FALSE}
 breast_cancer |>
    mutate(
