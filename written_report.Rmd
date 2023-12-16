@@ -14,6 +14,7 @@ library(tidyverse)
 library(broom)
 library(knitr)
 library(modelr)
+library(pROC)
 
 # Set default figure options
 knitr::opts_chunk$set(
@@ -95,7 +96,7 @@ $logit(p_i) = \mathbf{X}\beta+ \epsilon_i$
 
 Where ***X*** is the n x p design matrix, and $\beta$ is a vector in $\mathbb{R}^p$.
 
-In addition to the covariates we included the following interaction terms [].
+In addition to the covariates we included the interaction between `estrogen_status` and `progesterone_status` given that we found in our background research that having both "positive" increase the chances of breast cancer.
 
 ```{r construct full model, include = FALSE}
 logistic_model =
@@ -117,11 +118,60 @@ opt_model =
     direction = "both",
     k = 2,
     trace = 0)
+
+summary(opt_model)
 ```
 
 #### Model validation
   
-We performed [size] cross-validation to assess the performance of our model.
+We performed 10 cross-validation to assess the performance of our model.
+
+```{r}
+breast_cancer$cv = sample(1:10, size = nrow(breast_cancer), replace = T)
+
+test_dfs = list(n=10)
+
+for (i in 1:10){
+  
+  train = breast_cancer |>
+    filter(cv != i)
+  
+  test = breast_cancer |>
+    filter(cv == i)
+  
+  model = glm(status ~ age + race + marital_status + x6th_stage +
+                      differentiate + estrogen_status + progesterone_status + 
+                                  root_tumor_size + regional_prop, 
+                      data = train, family = binomial())
+  
+  test_probs = predict(model, newdata = test, type="response")
+  
+  test_preds = ifelse(test_probs >= 0.5, 1, 0)
+  
+  test$pred = test_preds
+  
+  test_dfs[[i]] = test
+  
+}
+```
+
+```{r}
+out_of_sample_preds = bind_rows(test_dfs[[1]], test_dfs[[2]])
+
+for (i in 3:10) {
+  
+  out_of_sample_preds = bind_rows(out_of_sample_preds, test_dfs[[i]])
+  
+}
+```
+
+```{r}
+#rows are real values
+table(out_of_sample_preds$status, out_of_sample_preds$pred)
+```
+
+
+
 
 #### Software
   
@@ -137,11 +187,43 @@ We used a logistic model coupled with criterion-based stepwise regression to det
 
 ROC, Brier score
 
+ROC for full model on in-sample data:
+
+```{r}
+p = predict(opt_model,type="response")
+
+y = breast_cancer$status
+
+tmp = roc(y,p)
+plot(tmp)
+print(tmp$auc)
+```
+
+
 Separation plots
 
 #### Model performance by race
 
 Make a table with ROC AUC and Brier scores by race. Discuss
+
+```{r}
+tmp = roc(y[breast_cancer$race == "White"],p[breast_cancer$race == "White"])
+white_auc = tmp$auc
+
+tmp = roc(y[breast_cancer$race == "Black"],p[breast_cancer$race == "Black"])
+black_auc = tmp$auc
+
+tmp = roc(y[breast_cancer$race == "Other"],p[breast_cancer$race == "Other"])
+other_auc = tmp$auc
+```
+
+```{r}
+data.frame(race = c("White", "Black", "Other"),
+              roc_auc = c(white_auc, black_auc, other_auc)) %>%
+  knitr::kable(, digits = 3)
+```
+
+
 
 ## Discussion
 
