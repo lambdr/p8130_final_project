@@ -79,7 +79,7 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
     str_detect(x6th_stage, "I") ~ "I",
     ),
     white = ifelse(race == "White", "White", "POC")) |> 
-  select(-c(regional_node_positive, regional_node_examined, survival_months,
+  dplyr::select(-c(regional_node_positive, regional_node_examined, survival_months,
             t_stage, n_stage, grade, tumor_size))
 ```
 
@@ -152,13 +152,7 @@ for (i in 1:10){
 ```
 
 ```{r out of sample prediction, include = FALSE}
-out_of_sample_preds = bind_rows(test_dfs[[1]], test_dfs[[2]])
-
-for (i in 3:10) {
-  
-  out_of_sample_preds = bind_rows(out_of_sample_preds, test_dfs[[i]])
-  
-}
+out_of_sample_preds = bind_rows(test_dfs)
 ```
 
 
