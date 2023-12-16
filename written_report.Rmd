@@ -103,7 +103,6 @@ logistic_model =
 #### Model selection
   
 We considered all We used a criterion-based method, utilizing Akaike Information Criterion (AIC) to assess the performance of our models.
-<!-- ref: https://ieeexplore.ieee.org/document/1311138 -->
 
 ```{r optimize model AIC, include = FALSE}
 opt_model =
@@ -286,7 +285,11 @@ American Cancer Society. Breast Cancer Stages. Atlanta, GA: American Cancer Soci
 
 Division of Cancer Prevention and Control, Centers for Disease Control and Prevention. Breast Cancer in Men. Atlanta, GA: Centers for Disease Control; 2023 July 25. Available from: [https://www.cdc.gov/cancer/breast/men/](https://www.cdc.gov/cancer/breast/men/index.htm#:~:text=Breast%20cancer%20is%20most%20often,is%20found%20in%20a%20man.&text=Invasive%20ductal%20carcinoma.,parts%20of%20the%20breast%20tissue.)
 
+Greenhill B, Ward MD, Sacks A. The separation plot: A new visual method for evaluating the fit of binary models. American Journal of Political Science. 2011;55(4):991–1002. doi:[10.1111/j.1540-5907.2011.00525.x](https://www.jstor.org/stable/23025132)
+
 Mayo Clinic. Breast Cancer. Rochester, MN: Mayo Foundation for Medical Education and Research. Available from: [https://www.mayoclinic.org/diseases-conditions/breast-cancer](https://www.mayoclinic.org/diseases-conditions/breast-cancer/symptoms-causes/syc-20352470)
+
+Stoica P, Selen Y. Model-order selection: a review of information criterion rules. IEEE Signal Processing Magazine. 2004;21(4):36–47. [doi:10.1109/msp.2004.1311138](https://ieeexplore.ieee.org/document/1311138) 
 
 Young Survival Coalition. Breast Cancer 101. New York, NY: Young Survival Coalition. Available from: [https://youngsurvival.org/breast-cancer](https://youngsurvival.org/breast-cancer-101?gad_source=1&gclid=CjwKCAiAg9urBhB_EiwAgw88mcI-WsyaKEn-nTaWET71dtNVebk2y3qHMeLMjBnxk42z-sE5LMbPPRoCLZYQAvD_BwE)
 
