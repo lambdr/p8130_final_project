@@ -216,7 +216,7 @@ This separation plot shows that the model is able to reasonably effectively dist
 
 #### Model validation: Table 1. 
 
-This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. We can see that the model is very good at correctly predicting that somebody survived, and rarely predicts the individual died when it didn't. However, the model makes a lot of errors when trying to predict if the individual survived: more than 90% of the total error happens when the model predicts the individual died, and it actually survived. This reflects the fact that the model prefers to predict 0 as a result of the `status` variable being 0 inflated. 
+This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. Note that cells 1 and 4 (if read from left to right, and top-down) are individuals for which their status prediction was correctly predicted, and cells 2 and 4 are individuals for which their status wasn't correctly predicted.
 
 ```{r confusion matrix, echo = FALSE}
 #rows are real values
@@ -271,7 +271,7 @@ Our model was effective at classifying patients who survived, but performed less
 
 Furthermore, conflicting conclusions occurred while assessing model performance by race. According to the ROC AUC values, the model performed better for White patients, then Black patients, then 'Other' race patients. On the contrary, the brier scores by race suggests that the model most accurately predicted probabilities for 'Other' race patients, followed by White and Black patients.
 
-
+CV: We can see that the model is very good at correctly predicting that somebody survived, and rarely predicts the individual died when it didn't. However, the model makes a lot of errors when trying to predict if the individual survived: more than 90% of the total error happens when the model predicts the individual died, and it actually survived. This reflects the fact that the model prefers to predict 0 as a result of the `status` variable being 0 inflated. 
 
 
 ## Author Contributions
