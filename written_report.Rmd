@@ -35,6 +35,8 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Abstract
 
+Studies have shown that there are many risk factors combinations for breast cancer. Fortunately, breast cancer survival rates have increased and number of deaths have decreased. Nevertheless, it is important to explore the most significant breast cancer risk factors. To do so, we used a dataset containing demographic and risk factors information, and survival status by patients. After cleaning and exploring the data, we dropped highly correlated variables, combined others, and performed transformations. We then built the full model, containing an interaction between estrogen and progesterone status, and selected the best model using Akaike Information Criterion (AIC). Overall, our final model had a good ROC-AUC and Brier score values. 
+
 ## Introduction
 
 Breast cancer occurs due to abnormal cell growths in breast tissue. Although it is most often found in females, 1 out of every 100 diagnosed patients in the US is a male. Other breast cancer risk factors include, increase in age, family history or personal history of breast cancer, radiation exposure, obesity, alcohol use, among many more. Research suggests that postmenopausal hormone therapy is a risk factor due the combination of estrogen and progesterone used to treat signs and symptoms of menopause. 
@@ -102,7 +104,7 @@ logistic_model =
 
 #### Model selection
   
-We considered all We used a criterion-based method, utilizing Akaike Information Criterion (AIC) to assess the performance of our models.
+We used a criterion-based method, utilizing Akaike Information Criterion (AIC) to assess the performance of our models.
 <!-- ref: https://ieeexplore.ieee.org/document/1311138 -->
 
 ```{r optimize model AIC, include = FALSE}
@@ -191,7 +193,6 @@ brier_score <- mean((predicted_prob-breast_cancer$status)^2)
 
 A brier score was produced to assess the optimal model's performance. Brier score measures the accuracy of probalistic predictions, where a score of 0 indicates perfect accuracy. The optimal model's brier score was `r round(brier_score, 3)`. This suggests that our final model has good probabilistic prediction accuracy. 
 
-Separation plots
 
 ```{r add prediction and residual, include = FALSE}
 # This code chunk is probably redundant but I need it for now
