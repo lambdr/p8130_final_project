@@ -163,9 +163,7 @@ for (i in 3:10) {
 
 
 
-#### Software
-  
-The aforementioned analyses were carried out using R 4.3.1 and RStudio Version 2023.06.2+561.
+
 
 ## Results
 
@@ -286,6 +284,9 @@ Our model was effective at classifying patients who survived, but performed less
 
 ## References
 
+#### Software
+  
+The aforementioned analyses were carried out using R 4.3.1 and RStudio Version 2023.06.2+561.
 \newpage
 ## Appendices
 
