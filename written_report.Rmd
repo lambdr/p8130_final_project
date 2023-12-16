@@ -191,7 +191,7 @@ predicted_prob <- predict(opt_model, type = 'response')
 brier_score <- mean((predicted_prob-breast_cancer$status)^2)
 ```
 
-A brier score was produced to assess the optimal model's performance. Brier score measures the accuracy of probalistic predictions, where a score of 0 indicates perfect accuracy. The optimal model's brier score was `r round(brier_score, 3)`. This suggests that our final model has good probablistic prediction accuracy. 
+A brier score was produced to assess the optimal model's performance. Brier score measures the accuracy of probalistic predictions, where a score of 0 indicates perfect accuracy. The optimal model's brier score was `r round(brier_score, 3)`. This suggests that our final model has good probabilistic prediction accuracy. 
 
 #### Table 1. 
 
