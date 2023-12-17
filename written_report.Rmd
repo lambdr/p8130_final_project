@@ -1,6 +1,8 @@
 ---
 title: "P8130 Final Project: Predicting Breast Cancer Survival"
-author: "Guadalupe Antonio Lopez (GA2612), Gustavo Garcia-Franceschini (GEG2145), Derek Lamb (DRL2168)"
+author: 
+  - "Guadalupe Antonio Lopez, Gustavo Garcia-Franceschini, Derek Lamb"
+  -  "UNI's: GA2612, GEG2145, DRL2168"
 header-includes:
     - \usepackage{setspace}\doublespacing
 
@@ -20,7 +22,7 @@ library(gtsummary)
 # Set default figure options
 knitr::opts_chunk$set(
   fig.width = 6,
-  out.width = "90%"
+  out.width = "70%"
 )
 
 theme_set(theme_bw() + theme(legend.position = "bottom"))
@@ -36,26 +38,25 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Abstract
 
-Studies have shown that there are many risk factor combinations for breast cancer. Fortunately, breast cancer survival rates have increased and number of deaths have decreased. Nevertheless, it is important to explore the most significant breast cancer risk factors to identify at-risk groups for further research. To do so, we used a dataset containing demographic and risk factors information, and survival status by patients. After cleaning and exploring the data, we dropped highly correlated variables, combined others, and performed transformations. We then built the full model, containing an interaction between estrogen and progesterone status, and selected the best model using Akaike Information Criterion (AIC). Overall, our final model had a good ROC-AUC and Brier score values. 
+Studies have shown that there are many risk factor combinations for breast cancer. Fortunately, in recent years, breast cancer survival rates have increased and number of deaths have decreased. Nevertheless, it is important to explore the most significant breast cancer risk factors to identify at-risk groups for further research. To do so, we used a dataset containing demographic and risk factors information, and survival status by patients. After cleaning and exploring the data, we dropped highly correlated variables, combined others, and performed transformations. We then built the full model, containing an interaction between estrogen and progesterone status, and selected the best model using Akaike Information Criterion (AIC). Overall, our final model had a good ROC-AUC and Brier score values, enabling it to effectively predict liklihood of death in breast cancer patients.
 
 ## Introduction
 
-Breast cancer occurs due to abnormal cell growths in breast tissue. Although it is most often found in females, 1 out of every 100 diagnosed patients in the US is a male. Other breast cancer risk factors include, increase in age, family history or personal history of breast cancer, radiation exposure, obesity, alcohol use, among many more. Research suggests that postmenopausal hormone therapy is a risk factor due the combination of estrogen and progesterone used to treat signs and symptoms of menopause. 
+Breast cancer occurs due to abnormal cell growths in breast tissue. Although it is most often found in females, 1 out of every 100 diagnosed patients in the US is a male. Other breast cancer risk factors include increased age, family history or personal history of breast cancer, radiation exposure, obesity, alcohol use, andmore. Research suggests that postmenopausal hormone therapy is a risk factor due the combination of estrogen and progesterone used to treat signs and symptoms of menopause.
 
-Additionally, the patient's breast cancer stage is important to consider when determining the severity of the cancer and how to treat it. The American Joint Committee on Cancer (AJCC) TNM system is the most common, and contains clinical and pathologic systems. The pathologic stage is determined by examining the tissue removed during surgery, while the clinical stage is based on results of a physical exam, biopsy, and imaging tests. Nevertheless, both systems are composed of the size of the tumor, the spread to nearby lymph nodes and/or to distant sites, their estrogen and/or progesterone receptor status, the grade of the cancer, and if the cancer makes too much of HER2 protein. 
+Additionally, the patient's breast cancer stage is important to consider when determining the severity of the cancer and how to treat it. The American Joint Committee on Cancer (AJCC) TNM system is the most common, and contains clinical and pathologic systems. The pathologic stage (also known as the surgical stage) is determined by examining the tissue removed during surgery, while the clinical stage is based on results of a physical exam, biopsy, and imaging tests. Nevertheless, both systems are composed of the size of the tumor, the spread to nearby lymph nodes and/or to distant sites, their estrogen and/or progesterone receptor status, the grade of the cancer, and if the cancer makes too much of HER2 protein.
 
-Although, most recently, breast cancer survival rates have increase and number of deaths decreased, it would be important to explore the risk factors of breast cancer. For this project, we will investigate the odds of breast cancer survival given most of the risk factors previously mentioned.
-
+Although, most recently, breast cancer survival rates have increase and number of deaths decreased, it is important to explore the risk factors of breast cancer. Understanding these risk factors allow for the identification of still high-risk patient populations and the tailoring of cancer treatment to the patient in the changing paradigm of personalized medicine. For this project, we will investigate the odds of breast cancer survival given most of the risk factors previously mentioned.
 
 ## Methods
 
 #### Data source
-  
-We obtained a deidentified set containing data on 4024 breast cancer patients. this dataset contains both demographic information, such as patient age, race, and marital status; clinical information such as tumor stage, tumor size, hormone therapies (progesterone and estrogen), regional node positive, and regional node examined; and outcome information: the number of months the patient had survived prior to study conclusion, and their alive/dead status at the end of the study.
+
+We obtained a deidentified set containing data on 4024 breast cancer patients. this dataset contains both demographic information, such as patient age, race, and marital status; clinical information such as tumor stage, tumor size, cancer hormone receptor status (progesterone and estrogen), regional node positive, and regional node examined; and outcome information: the number of months the patient had survived prior to study conclusion, and their alive/dead status at the end of the study.
 
 #### Data cleaning
-  
-We combined the regional node positive and regional node examined variables into a "regional node proportion positive" variable. This variable, but neither the node positive nor node examined variables were in the model. Further, we decided to discard the T stage and N stage variables, as they captured information already contained in the AJCC 6th stage variable. We also excluded the grade variable, as it captured the same clinical information as the differentiate variable. Due to the skewness in the distribution of the tumor size, we applied a square root transformation to that variable (**Supplemental Figure 1**). We also added a main_stage variable, which groups all the stages in `6th_stage` so that "IIIA" and "IIIC" are under factor level "III" for example, and added a white variable that tells us if the patient is "White" or not, essentially grouping "Black" and "Other" together. Both variables were created in case the reduction of factor levels makes the fit better.
+
+We combined the regional node positive and regional node examined variables into a "regional node proportion positive" variable. This variable, but neither the node positive nor node examined variables were in the model. Further, we decided to discard the T stage and N stage variables, as they captured information already contained in the AJCC 6th stage variable. We also excluded the grade variable, as it captured the same clinical information as the differentiate variable. Due to the skewness in the distribution of the tumor size, we applied a square root transformation to that variable (**Supplemental Figure 1**). We also added a main_stage variable, which groups all the stages in 6th_stage, i.e. that "IIIA" and "IIIC" are under factor level "III", and added an indicator variable that tells us if the patient is "White" or not, essentially grouping "Black" and "Other" together. Both variables were created in case the reduction of factor levels makes the fit better.
 
 ```{r data import and tidying, include = FALSE}
 breast_cancer <- read_csv('data/Project_2_data.csv') |> 
@@ -85,14 +86,10 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
 ```
 
 #### Model construction
-  
-We decided to use logistic regression model to estimate the risk of patient death within the followup window. Formally, we assumed that an for an individual, with probability *p* to die after receiving a breast cancer diagnosis, the log-odds of *p* was linear, i.e.
 
-$logit(p_i) = \mathbf{X}\beta+ \epsilon_i$
+We decided to use logistic regression model to estimate the risk of patient death within the followup window. Formally, we assumed that for an individual, with probability *p* to die after receiving a breast cancer diagnosis, the log-odds of *p* was linear, i.e. $logit(p) = \mathbf{X}\beta + \epsilon$, where **X** is the n x p design matrix, and $\beta$ and $\epsilon$ are vectors in $\mathbb{R}^p$.
 
-Where ***X*** is the n x p design matrix, and $\beta$ is a vector in $\mathbb{R}^p$.
-
-In addition to the covariates we included the interaction between `estrogen_status` and `progesterone_status` given that we found in our background research that having both "positive" increase the chances of breast cancer.
+In addition to the covariates, we included the interaction between estrogen status and progesterone status given that we found in our background research that having both "positive" increase the chances of breast cancer.
 
 ```{r construct full model, include = FALSE}
 logistic_model =
@@ -101,9 +98,8 @@ logistic_model =
       data = _, family = binomial())
 ```
 
-
 #### Model selection
-  
+
 We used a criterion-based method, utilizing Akaike Information Criterion (AIC) to assess the performance of our models.
 
 ```{r optimize model AIC, include = FALSE}
@@ -118,8 +114,8 @@ summary(opt_model)
 ```
 
 #### Model validation
-  
-We performed 10 cross-validation to assess the performance of our model. Each observation in a dataset will be in 1 of 10 folds such that it gets used as training data 9 times, and as test data once. The predictions are then saved such that each row has an out-of-sample prediction that can be compared to the real value.
+
+We performed 10-fold cross-validation to assess the performance of our model. Each observation in a dataset will be in 1 of 10 folds such that it gets used as training data 9 times, and as test data once. Because this dataset has over 4,000 subjects, each test set will include approximatley 400 subjects. The predictions are then saved such that each row has an out-of-sample prediction that can be compared to the real value.
 
 ```{r cross validation, include = FALSE}
 breast_cancer$cv = sample(1:10, size = nrow(breast_cancer), replace = T)
@@ -154,14 +150,14 @@ for (i in 1:10){
 out_of_sample_preds = bind_rows(test_dfs)
 ```
 
-
 ## Results
 
 #### Exploratory Data Analysis
 
 **Table 1** shows summary statistics for demographic variables, along with some variables related to breast cancer. They are split by whether they survived or not, with the first column being the summary statistics for the entire dataset. We noticed that although individuals had similar ages despite their status, Black individuals and widows died at a disproportional rate. Those that died also had higher root_tumor_size and regional_prop, which are variables related to cancer where higher values are more alarming. Summary statistics for all variables can be found in **Supplemental Table 1**.
 
-**Table 1.** Baseline characteristics 
+**Table 1.** Baseline characteristics
+
 ```{r eda table, echo = FALSE, message = FALSE}
 breast_cancer |>
    mutate(
@@ -193,16 +189,18 @@ tmp = roc(y,p)
 model_auc = tmp$auc
 ```
 
-This is the ROC-AUC for full model on in-sample data, which is a measure that uses the model's specificity and sensitivity to get a score bounded by 0 and 1, where 1 is best. This model's ROC-AUC is `r round(model_auc, 3)`. 
+We constructed a receiver operating characteristic curve (ROC) for our model on in-sample data, and used the area under the curve (AUC) to measure the model's discriminatory capability. This approach compares the model's specificity and sensitivity to get a score bounded by 0 and 1, where 1 is best. This model's ROC-AUC is `r round(model_auc, 3)`.
 
 ```{r roc curve, echo = FALSE, message = FALSE}
 plot(tmp)
 model_auc = tmp$auc
 ```
+  
+**Figure 1.** Receiver operating characteristic curve for the optimal logistic regression model.
 
-```{r brier score full model, echo=FALSE, message=FALSE}
+```{r brier score full model, echo = FALSE, message = FALSE}
 #adding predicted prob to model
-breast_cancer <- breast_cancer %>%
+breast_cancer <- breast_cancer |> 
   mutate(predicted_prob = predict(opt_model, type = 'response'))
 
 predicted_prob <- predict(opt_model, type = 'response')
@@ -210,9 +208,9 @@ predicted_prob <- predict(opt_model, type = 'response')
 brier_score <- mean((predicted_prob-breast_cancer$status)^2)
 ```
 
-A brier score was produced to assess the optimal model's performance. Brier score measures the accuracy of probabilistic predictions, where a score of 0 indicates perfect accuracy. The optimal model's brier score was `r round(brier_score, 3)`. This suggests that our final model has good probabilistic prediction accuracy. 
+We calculated Brier scores to assess the optimal model's performance. The Brier score measures the accuracy of probabilistic predictions, where a score of 0 indicates perfect accuracy. The optimal model's Brier score was `r round(brier_score, 3)`. This suggests that our final model has good probabilistic prediction accuracy.
 
-This separation plot shows that the model is able to reasonably effectively distinguish the patients that survived from those that died, though the low value of the predicted probability across the sample shows that it gives low probabilities of dying to all subjects.
+To further assess the performance of our model, we constructed a separation plot, a graphical method for determining concordant and discordant predictions (**Figure 2**). This separation plot shows that the model is able to reasonably effectively distinguish the patients that survived from those that died, though the low value of the predicted probability across the sample shows that it gives low probabilities of dying to all subjects.
 
 ```{r add prediction and residual, include = FALSE}
 breast_cancer = 
@@ -227,16 +225,17 @@ separationplot(pred = breast_cancer$p_hat,
 # This plot outputs a dataframe object that renders locally in R only
 # We saved it as a png and then inserted it directly
 ```
+
 ![](images/sep_plot_full.png)
 
 **Figure 2.** Separation plot of model. Values are stripes, arranged in increasing predicted probability of death. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
-
 
 #### Model validation
 
 This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. Note that cells 1 and 4 (if read from left to right, and top-down) are individuals for which their status prediction was correctly predicted, and cells 2 and 4 are individuals for which their status wasn't correctly predicted.
 
 **Table 1.** Confusion matrix of the model
+
 ```{r confusion matrix, echo = FALSE}
 #rows are real values
 c_matrix = table(out_of_sample_preds$status, out_of_sample_preds$pred) 
@@ -272,11 +271,10 @@ other_breast_cancer <- breast_cancer %>%
 other_brier_score <- mean((other_breast_cancer$predicted_prob - other_breast_cancer$status)^2)
 ```
 
-
-Lastly, model performance by race was explored using ROC AUC and Brier score values. The values by race are presented in the table below. The highest AUC was obtained for white patients, while the lowest brier score was obtained for the Other racial group.
-
+Lastly, model performance by race was explored using ROC AUC and Brier score values. The values by race are presented in **Table 2**. The highest AUC was obtained for white patients, while the lowest Brier score was obtained for the Other racial group. Separation plots were also constructed stratified on racial groups (**Figure S2**). These plots showed good performance for White subjects, but poorer performance for subjects of Black and Other race.
 
 **Table 2.** Model performance by race
+
 ```{r table of performance by race, echo = FALSE}
 data.frame(race = c("White", "Black", "Other"),
            roc_auc = c(white_auc, black_auc, other_auc),
@@ -287,21 +285,21 @@ data.frame(race = c("White", "Black", "Other"),
 
 ## Discussion
 
-We constructed a model to predict the survival of breast cancer patients, and optimized it using a criterion based-selection approach. Most of the covariates in the dataset were identified by AIC as being useful predictors, with the exception of Stage A. Despite the combination of progesterone (PR+) and estrogen (ER+) receptors in breast cancer being of note clinically, our model did not find the interaction term between these variables to be worth including. This suggests that the adjusted odds ratio for risk of death in ER+/PR+ is 1.
+We constructed a model to predict the survival of breast cancer patients, and optimized it using a criterion based-selection approach. Most of the covariates in the dataset were identified by AIC as being useful predictors, with the exception of Stage A. Despite the combination of progesterone (PR+) and estrogen (ER+) receptors in breast cancer being of note clinically, our model did not find the interaction term between these variables to be worth including. This suggests that the odds ratio for risk of death in ER+ patients with PR+ is not significantly different from those who are PR-, and vice versa.
 
-The most significant predictor of death was the regional node positive proportion variable; an individual with 100% positive regional nodes has 3.5 times the odds of death compared with an individual who had no positive regional nodes. Other highly significant predictors were cancer stage (specifically whether the patient was IIIC),  whether the tumor was well differentiated (i.e. healthy cells), hormone receptors on the tumor (ER+ and PR+), and age.
+The most significant predictor of death was the regional node positive proportion variable; an individual with 100% positive regional nodes has 3.5 times the odds of death (CI: 2.4, 5.0) compared with an individual who had no positive regional nodes. Other highly significant predictors were cancer stage (specifically whether the patient was IIIC), whether the tumor was well differentiated (i.e. healthy cells), hormone receptors on the tumor (ER+ and PR+), and age.
 
-Our model was effective at classifying patients who survived, but performed less well at classifying patients who died when using a $\hat{p}=0.5$ as the cutoff. The separation plot we constructed suggests that a lower cutoff, such as 0.35 may be more appropriate, and further tuning may improve model performance.
+Our model was effective at classifying patients who survived, but performed less well at classifying patients who died when using a $\hat{p}=0.5$ as the cutoff. The separation plot we constructed suggests that a lower cutoff, such as 0.35 may be more appropriate, and that further tuning may improve model performance.
 
-Our model was effective at classifying patients who survived, but performed less well at classifying patients who died when using a $\hat{p}=0.5$ as the cutoff. The separation plot we constructed suggests that a lower cutoff, such as 0.35 may be more appropriate, and further tuning may improve model performance.
+Furthermore, conflicting conclusions occurred while assessing model performance by race. According to the ROC AUC values, the model performed better for White patients, then Black patients, then 'Other' race patients. On the contrary, the Brier scores by race suggests that the model most accurately predicted probabilities for 'Other' race patients, followed by White and Black patients.
 
-Furthermore, conflicting conclusions occurred while assessing model performance by race. According to the ROC AUC values, the model performed better for White patients, then Black patients, then 'Other' race patients. On the contrary, the brier scores by race suggests that the model most accurately predicted probabilities for 'Other' race patients, followed by White and Black patients.
+From our cross-validation confusion matrix, we can see that the model is very good at correctly predicting that somebody survived, and rarely predicts the individual died when it didn't. However, the model makes a lot of errors when trying to predict if the individual survived: more than 90% of the total error happens when the model predicts the individual died, and it actually survived. This reflects the fact that the model prefers to predict 0 as a result of the status variable being 0 inflated.
 
-From our cross-validation confusion matrix, we can see that the model is very good at correctly predicting that somebody survived, and rarely predicts the individual died when it didn't. However, the model makes a lot of errors when trying to predict if the individual survived: more than 90% of the total error happens when the model predicts the individual died, and it actually survived. This reflects the fact that the model prefers to predict 0 as a result of the `status` variable being 0 inflated. 
-
+Overall, our model provides useful insight into the risk factors for death in breast cancer patients. Future research may expand this project even further by using a dataset with more non-white participants, thus improving prediction across racial strata. This further exploration is important to improving equity in healthcare outcomes, and is in line with our goal of identifying vulnerable patient subgroups for further research.
 
 ## Author Contributions
-Guadalupe wrote the abstract and introduction and performed model diagnostics (brier scores). Gustavo performed exploratory data analysis, model performance, and model diagnostics (ROC curves). Derek did the data cleaning, model construction, and diagnostics (separation plot). All authors contributed to the writing of the results and the discussion.
+
+Guadalupe wrote the abstract and introduction and performed model diagnostics (Brier scores). Gustavo performed exploratory data analysis, model performance, and model diagnostics (ROC curves). Derek did the data cleaning, model construction, and diagnostics (separation plot). All authors contributed to the writing of the results and the discussion.
 
 ## References
 
@@ -309,23 +307,23 @@ American Cancer Society. Breast Cancer Stages. Atlanta, GA: American Cancer Soci
 
 Division of Cancer Prevention and Control, Centers for Disease Control and Prevention. Breast Cancer in Men. Atlanta, GA: Centers for Disease Control; 2023 July 25. Available from: [https://www.cdc.gov/cancer/breast/men/](https://www.cdc.gov/cancer/breast/men/index.htm#:~:text=Breast%20cancer%20is%20most%20often,is%20found%20in%20a%20man.&text=Invasive%20ductal%20carcinoma.,parts%20of%20the%20breast%20tissue.)
 
-Greenhill B, Ward MD, Sacks A. The separation plot: A new visual method for evaluating the fit of binary models. American Journal of Political Science. 2011;55(4):991–1002. doi:[10.1111/j.1540-5907.2011.00525.x](https://www.jstor.org/stable/23025132)
+Greenhill B, Ward MD, Sacks A. The separation plot: A new visual method for evaluating the fit of binary models. American Journal of Political Science. 2011;55(4):991--1002. [doi:[10.1111/j.1540-5907.2011.00525.x](doi:%5B10.1111/j.1540-5907.2011.00525.x){.uri}](<https://www.jstor.org/stable/23025132>)
 
 Mayo Clinic. Breast Cancer. Rochester, MN: Mayo Foundation for Medical Education and Research. Available from: [https://www.mayoclinic.org/diseases-conditions/breast-cancer](https://www.mayoclinic.org/diseases-conditions/breast-cancer/symptoms-causes/syc-20352470)
 
-Stoica P, Selen Y. Model-order selection: a review of information criterion rules. IEEE Signal Processing Magazine. 2004;21(4):36–47. [doi:10.1109/msp.2004.1311138](https://ieeexplore.ieee.org/document/1311138) 
+Stoica P, Selen Y. Model-order selection: a review of information criterion rules. IEEE Signal Processing Magazine. 2004;21(4):36--47. [doi:10.1109/msp.2004.1311138](https://ieeexplore.ieee.org/document/1311138)
 
 Young Survival Coalition. Breast Cancer 101. New York, NY: Young Survival Coalition. Available from: [https://youngsurvival.org/breast-cancer](https://youngsurvival.org/breast-cancer-101?gad_source=1&gclid=CjwKCAiAg9urBhB_EiwAgw88mcI-WsyaKEn-nTaWET71dtNVebk2y3qHMeLMjBnxk42z-sE5LMbPPRoCLZYQAvD_BwE)
 
-
-
 #### Software
-  
+
 The aforementioned analyses were carried out using R 4.3.1 and RStudio Version 2023.06.2+561.
 
 \newpage
+
 ## Supplemental Information
 
+<<<<<<< HEAD
 #### Table S1. Summary Statistics for all variables
 ```{r eda all data, echo = FALSE, message = FALSE}
 breast_cancer |>
@@ -343,6 +341,10 @@ breast_cancer |>
 
 
 #### Table S2. Model Coefficients
+=======
+#### Table S1. Model Coefficients
+
+>>>>>>> 3b6a558d70d5458b9099c1aa2bddda0166956d5a
 ```{r model coefficients, echo = FALSE}
 opt_model |> 
   tidy() |> 
@@ -357,7 +359,9 @@ opt_model |>
 ```
 
 \newpage
+
 ### Supplemental figures
+
 ```{r tumor size transformation hist, echo = FALSE, message = FALSE}
 tumor_plot = 
   breast_cancer |> 
@@ -382,9 +386,9 @@ tumor_plot_sq =
 
 ggpubr::ggarrange(tumor_plot, tumor_plot_sq)
 ```
-  
+
 **Figure S1.** Transformation of tumor size variable. (A) Before transformation. (B) After square root transformation.
 
 \newpage
-![](images/sep_plot_race.png)
-**Figure S2.** Separation plots by race. Values are stripes, arranged in increasing predicted probability of death in (A) White, (B) Black, and (C) Other race patients. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
+
+![](images/sep_plot_race.png) **Figure S2.** Separation plots by race. Values are stripes, arranged in increasing predicted probability of death in (A) White, (B) Black, and (C) Other race patients. The stripes are colored yellow if the patient survived, and red if they died. The black line indicates the predicted probability of death.
