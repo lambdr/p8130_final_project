@@ -323,7 +323,6 @@ The aforementioned analyses were carried out using R 4.3.1 and RStudio Version 2
 
 ## Supplemental Information
 
-<<<<<<< HEAD
 #### Table S1. Summary Statistics for all variables
 ```{r eda all data, echo = FALSE, message = FALSE}
 breast_cancer |>
@@ -341,10 +340,7 @@ breast_cancer |>
 
 
 #### Table S2. Model Coefficients
-=======
-#### Table S1. Model Coefficients
 
->>>>>>> 3b6a558d70d5458b9099c1aa2bddda0166956d5a
 ```{r model coefficients, echo = FALSE}
 opt_model |> 
   tidy() |> 
