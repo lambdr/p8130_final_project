@@ -87,7 +87,7 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
 
 #### Model construction
 
-We decided to use logistic regression model to estimate the risk of patient death within the followup window. Formally, we assumed that an for an individual, with probability *p* to die after receiving a breast cancer diagnosis, the log-odds of *p* was linear, i.e. $logit(p_i) = \mathbf{X}\beta+ \epsilon_i$, where **X** is the n x p design matrix, and $\beta$ is a vector in $\mathbb{R}^p$.
+We decided to use logistic regression model to estimate the risk of patient death within the followup window. Formally, we assumed that for an individual, with probability *p* to die after receiving a breast cancer diagnosis, the log-odds of *p* was linear, i.e. $logit(p_i) = \mathbf{X}\beta+ \epsilon_i$, where **X** is the n x p design matrix, and $\beta$ is a vector in $\mathbb{R}^p$.
 
 In addition to the covariates we included the interaction between estrogen status and progesterone status given that we found in our background research that having both "positive" increase the chances of breast cancer.
 
