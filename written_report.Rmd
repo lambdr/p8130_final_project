@@ -159,7 +159,7 @@ out_of_sample_preds = bind_rows(test_dfs)
 
 #### Exploratory Data Analysis
 
-**Table 1** shows summary statistics for demographic variables, along with some variables related to breast cancer. They are split by whether they survived or not, with the first column being the summary statistics for the entire dataset. We noticed that although individuals had similar ages despite their status, Black individuals and widows died at a disproportional rate. Those that died also had higher root_tumor_size and regional_prop, which are variables related to cancer where higher values are more alarming.
+**Table 1** shows summary statistics for demographic variables, along with some variables related to breast cancer. They are split by whether they survived or not, with the first column being the summary statistics for the entire dataset. We noticed that although individuals had similar ages despite their status, Black individuals and widows died at a disproportional rate. Those that died also had higher root_tumor_size and regional_prop, which are variables related to cancer where higher values are more alarming. Summary statistics for all variables can be found in **Supplemental Table 1**.
 
 **Table 1.** Baseline characteristics 
 ```{r eda table, echo = FALSE, message = FALSE}
@@ -179,7 +179,7 @@ breast_cancer |>
 
 #### Model construction and selection
 
-We used a logistic model coupled with criterion-based stepwise regression to determine which variables were useful in predicting the risk of death in breast cancer patients. The variables that were identified as important were age, race, marital status, AJCC 6th stage, differentiate, estrogen status, progesterone status, tumor size, and regional node positive proportion. Some variables that were not identified as important by the model were whether the tumor was Stage A and the interaction between estrogen and progesterone status. For a list of model coefficients see **Supplemental Table 1**.
+We used a logistic model coupled with criterion-based stepwise regression to determine which variables were useful in predicting the risk of death in breast cancer patients. The variables that were identified as important were age, race, marital status, AJCC 6th stage, differentiate, estrogen status, progesterone status, tumor size, and regional node positive proportion. Some variables that were not identified as important by the model were whether the tumor was Stage A and the interaction between estrogen and progesterone status. For a list of model coefficients see **Supplemental Table 2**.
 
 #### Diagnostics
 
@@ -326,7 +326,23 @@ The aforementioned analyses were carried out using R 4.3.1 and RStudio Version 2
 \newpage
 ## Supplemental Information
 
-#### Table S1. Model Coefficients
+#### Table S1. Summary Statistics for all variables
+```{r eda all data, echo = FALSE, message = FALSE}
+breast_cancer |>
+   mutate(
+    status = case_match(status,
+                        1 ~ "Dead",
+                        0 ~ "Alive")) |>
+  tbl_summary(by = status,
+              statistic = list(
+              all_continuous() ~ "{mean} ({sd})",
+              all_categorical() ~ "{n} / {N} ({p}%)"
+  ))  |>
+  add_overall()
+```
+
+
+#### Table S2. Model Coefficients
 ```{r model coefficients, echo = FALSE}
 opt_model |> 
   tidy() |> 
