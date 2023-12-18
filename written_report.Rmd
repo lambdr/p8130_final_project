@@ -38,15 +38,15 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Abstract
 
-Studies have shown that there are many risk factor combinations for breast cancer. Fortunately, in recent years, breast cancer survival rates have increased and number of deaths have decreased. Nevertheless, it is important to explore the most significant breast cancer risk factors to identify at-risk groups for further research. To do so, we used a dataset containing demographic and risk factors information, and survival status by patients. After cleaning and exploring the data, we dropped highly correlated variables, combined others, and performed transformations. We then built the full model, containing an interaction between estrogen and progesterone status, and selected the best model using Akaike Information Criterion (AIC). Overall, our final model had a good ROC-AUC and Brier score values, enabling it to effectively predict liklihood of death in breast cancer patients.
+Studies have shown that there are many risk factor combinations for breast cancer. Fortunately, in recent years, breast cancer survival rates have increased and number of deaths have decreased. Nevertheless, it is important to explore the most significant breast cancer risk factors to identify at-risk groups for further research. To do so, we used a dataset containing demographic and risk factors information, and survival status by patients. After cleaning and exploring the data, we dropped highly correlated variables, combined others, and performed transformations. We then built the full model, containing an interaction between estrogen and progesterone status, and selected the best model using Akaike Information Criterion (AIC). Overall, our final model had a good ROC-AUC and Brier score values, enabling it to effectively predict likelihood of death in breast cancer patients.
 
 ## Introduction
 
-Breast cancer occurs due to abnormal cell growths in breast tissue. Although it is most often found in females, 1 out of every 100 diagnosed patients in the US is a male. Other breast cancer risk factors include increased age, family history or personal history of breast cancer, radiation exposure, obesity, alcohol use, andmore. Research suggests that postmenopausal hormone therapy is a risk factor due the combination of estrogen and progesterone used to treat signs and symptoms of menopause.
+Breast cancer occurs due to abnormal cell growths in breast tissue. Although it is most often found in females, 1 out of every 100 diagnosed patients in the US is a male. Other breast cancer risk factors include increased age, family history or personal history of breast cancer, radiation exposure, obesity, alcohol use, and more. Research suggests that postmenopausal hormone therapy is a risk factor due the combination of estrogen and progesterone used to treat signs and symptoms of menopause.
 
 Additionally, the patient's breast cancer stage is important to consider when determining the severity of the cancer and how to treat it. The American Joint Committee on Cancer (AJCC) TNM system is the most common, and contains clinical and pathologic systems. The pathologic stage (also known as the surgical stage) is determined by examining the tissue removed during surgery, while the clinical stage is based on results of a physical exam, biopsy, and imaging tests. Nevertheless, both systems are composed of the size of the tumor, the spread to nearby lymph nodes and/or to distant sites, their estrogen and/or progesterone receptor status, the grade of the cancer, and if the cancer makes too much of HER2 protein.
 
-Although, most recently, breast cancer survival rates have increase and number of deaths decreased, it is important to explore the risk factors of breast cancer. Understanding these risk factors allow for the identification of still high-risk patient populations and the tailoring of cancer treatment to the patient in the changing paradigm of personalized medicine. For this project, we will investigate the odds of breast cancer survival given most of the risk factors previously mentioned.
+Although breast cancer survival rates have increased and number of deaths have decreased recently, it is important to explore the risk factors of breast cancer. Understanding these risk factors allow for the identification of still high-risk patient populations and the tailoring of cancer treatment to the patient in the changing paradigm of personalized medicine. For this project, we will investigate the odds of breast cancer survival given most of the risk factors previously mentioned.
 
 ## Methods
 
@@ -87,7 +87,7 @@ breast_cancer <- read_csv('data/Project_2_data.csv') |>
 
 #### Model construction
 
-We decided to use logistic regression model to estimate the risk of patient death within the followup window. Formally, we assumed that for an individual, with probability *p* to die after receiving a breast cancer diagnosis, the log-odds of *p* was linear, i.e. $logit(p) = \mathbf{X}\beta + \epsilon$, where **X** is the n x p design matrix, and $\beta$ and $\epsilon$ are vectors in $\mathbb{R}^p$.
+We decided to use logistic regression model to estimate the risk of patient death within the followup window. Formally, we assumed that for an individual with probability *p* to die after receiving a breast cancer diagnosis, the log-odds of *p* was linear, i.e. $logit(p) = \mathbf{X}\beta + \epsilon$, where **X** is the n x p design matrix, and $\beta$ and $\epsilon$ are vectors in $\mathbb{R}^p$.
 
 In addition to the covariates, we included the interaction between estrogen status and progesterone status given that we found in our background research that having both "positive" increase the chances of breast cancer.
 
@@ -232,7 +232,7 @@ separationplot(pred = breast_cancer$p_hat,
 
 #### Model validation
 
-This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. Note that cells 1 and 4 (if read from left to right, and top-down) are individuals for which their status prediction was correctly predicted, and cells 2 and 4 are individuals for which their status wasn't correctly predicted.
+This table shows the confusion matrix made from our 10 fold cross-validation, such that the predicted values are out-of-sample predictors. Note that cells 1 and 4 (if read from left to right, and top-down) are individuals for which their status prediction was correctly predicted, and cells 2 and 3 are individuals for which their status wasn't correctly predicted.
 
 **Table 1.** Confusion matrix of the model
 
@@ -289,13 +289,13 @@ We constructed a model to predict the survival of breast cancer patients, and op
 
 The most significant predictor of death was the regional node positive proportion variable; an individual with 100% positive regional nodes has 3.5 times the odds of death (CI: 2.4, 5.0) compared with an individual who had no positive regional nodes. Other highly significant predictors were cancer stage (specifically whether the patient was IIIC), whether the tumor was well differentiated (i.e. healthy cells), hormone receptors on the tumor (ER+ and PR+), and age.
 
-Our model was effective at classifying patients who survived, but performed less well at classifying patients who died when using a $\hat{p}=0.5$ as the cutoff. The separation plot we constructed suggests that a lower cutoff, such as 0.35 may be more appropriate, and that further tuning may improve model performance.
+Our model was effective at classifying patients who survived, but was less effective at classifying patients who died when using a $\hat{p}=0.5$ as the cutoff. The separation plot we constructed suggests that a lower cutoff, such as 0.35 may be more appropriate, and that further tuning may improve model performance.
 
-Furthermore, conflicting conclusions occurred while assessing model performance by race. According to the ROC AUC values, the model performed better for White patients, then Black patients, then 'Other' race patients. On the contrary, the Brier scores by race suggests that the model most accurately predicted probabilities for 'Other' race patients, followed by White and Black patients.
+Conflicting conclusions occurred while assessing model performance by race. According to the ROC AUC values, the model performed better for White patients, then Black patients, then 'Other' race patients. However, the Brier scores by race suggests that the model most accurately predicted probabilities for 'Other' race patients, followed by White and Black patients. None of these scores were alarming to the extent we thought the model had horrible performance on one of the race groups, but any possible improvements would likely require more data or a more flexible model.
 
 From our cross-validation confusion matrix, we can see that the model is very good at correctly predicting that somebody survived, and rarely predicts the individual died when it didn't. However, the model makes a lot of errors when trying to predict if the individual survived: more than 90% of the total error happens when the model predicts the individual died, and it actually survived. This reflects the fact that the model prefers to predict 0 as a result of the status variable being 0 inflated.
 
-Overall, our model provides useful insight into the risk factors for death in breast cancer patients. Future research may expand this project even further by using a dataset with more non-white participants, thus improving prediction across racial strata. This further exploration is important to improving equity in healthcare outcomes, and is in line with our goal of identifying vulnerable patient subgroups for further research.
+Overall, our model provides useful insight into the risk factors for death in breast cancer patients. Future research may expand this project even further by using a dataset with more non-white participants, thus improving prediction across racial strata. Other models, like random forest, could lead to prediction accuracy improvement. This further exploration is important to improving equity in healthcare outcomes, and is in line with our goal of identifying vulnerable patient subgroups for further research.
 
 ## Author Contributions
 
