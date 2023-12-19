@@ -339,7 +339,7 @@ breast_cancer |>
   add_overall()
 ```
 
-
+\newpage
 #### Table S2. Model Coefficients
 
 ```{r model coefficients, echo = FALSE}
